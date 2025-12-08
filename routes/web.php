@@ -18,7 +18,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// ⭐ FORM PENGAJUAN - BISA DIAKSES TANPA LOGIN
 Route::get('/pengajuan', [InternshipRequestController::class, 'create'])
     ->name('pengajuan.create');
 
