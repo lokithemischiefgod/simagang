@@ -104,6 +104,16 @@ class AttendanceController extends Controller
             return back()->with('error', 'Anda sudah melakukan check-out hari ini.');
         }
 
+        // ❌ TIDAK BOLEH checkout jika status = izin
+        if ($attendance->status === 'izin') {
+            return back()->with('error', 'Anda hari ini berstatus izin, sehingga tidak dapat melakukan check-out.');
+        }
+
+        // (opsional) kalau mau lebih ketat: hanya izinkan checkout kalau status hadir / turun_lapangan
+        if (!in_array($attendance->status, ['hadir', 'turun_lapangan'])) {
+            return back()->with('error', 'Status absensi Anda hari ini tidak valid untuk check-out.');
+        }
+
         $attendance->jam_keluar = now()->toTimeString();
         $attendance->save();
 
@@ -125,7 +135,6 @@ class AttendanceController extends Controller
         $user = auth()->user();
         $today = now()->toDateString();
 
-        // Jangan double isi kalau sudah ada absensi
         $existing = Attendance::where('user_id', $user->id)
             ->where('tanggal', $today)
             ->first();
@@ -151,7 +160,7 @@ class AttendanceController extends Controller
         if ($error) {
             return back()->with('error', $error);
         }
-        
+
         $request->validate([
             'keterangan' => 'required|string',
         ]);
@@ -159,22 +168,45 @@ class AttendanceController extends Controller
         $user = auth()->user();
         $today = now()->toDateString();
 
-        $attendance = Attendance::firstOrNew([
-            'user_id' => $user->id,
-            'tanggal' => $today,
-        ]);
+        // Ambil absensi hari ini
+        $attendance = Attendance::where('user_id', $user->id)
+            ->where('tanggal', $today)
+            ->first();
 
-        if ($attendance->exists && $attendance->status !== 'turun_lapangan' && $attendance->status !== 'hadir') {
-            return back()->with('error', 'Anda sudah mengisi status hari ini sebagai ' . $attendance->status);
+        // ❌ Harus sudah check-in dulu
+        if (!$attendance) {
+            return back()->with('error', 'Anda harus check-in terlebih dahulu sebelum menandai turun lapangan.');
         }
 
+        // ❌ Tidak boleh kalau sudah checkout
+        if ($attendance->jam_keluar) {
+            return back()->with('error', 'Anda sudah melakukan check-out hari ini, tidak dapat menandai turun lapangan.');
+        }
+
+        // ❌ Tidak boleh kalau hari ini izin
+        if ($attendance->status === 'izin') {
+            return back()->with('error', 'Anda hari ini berstatus izin, tidak dapat menandai turun lapangan.');
+        }
+
+        // ✅ Hanya izinkan dari status "hadir" atau sudah "turun_lapangan"
+        if (!in_array($attendance->status, ['hadir', 'turun_lapangan'])) {
+            return back()->with('error', 'Status absensi Anda hari ini tidak valid untuk turun lapangan.');
+        }
+
+        // Set status ke turun_lapangan, tetap pertahankan jam_masuk
         $attendance->status = 'turun_lapangan';
+
+        // Kalau belum ada jam_masuk (jaga-jaga), isi sekarang
         if (!$attendance->jam_masuk) {
             $attendance->jam_masuk = now()->toTimeString();
         }
+
+        // Update keterangan (lokasi / agenda lapangan)
         $attendance->keterangan = $request->keterangan;
+
         $attendance->save();
 
         return back()->with('success', 'Status turun lapangan berhasil dicatat.');
     }
+
 }
