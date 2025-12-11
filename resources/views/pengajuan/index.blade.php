@@ -1,109 +1,156 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Admin - Daftar Pengajuan Magang</title>
-</head>
-<body>
-    <nav style="margin-bottom: 16px;">
-        <a href="{{ route('admin.pengajuan.index') }}">Halaman Pengajuan</a> |
-        <a href="{{ route('admin.absensi.index') }}">Halaman Absensi</a> |
-        <a href="{{ route('admin.peserta.index') }}">Daftar Peserta</a>
+@extends('layouts.admin')
 
-    </nav>
-    
-    @if (session('success'))
-        <p style="color: green">{{ session('success') }}</p>
-    @endif
+@section('content')
+    <div class="space-y-6">
 
-    @if (session('error'))
-        <p style="color: red">{{ session('error') }}</p>
-    @endif
+        {{-- Header --}}
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-semibold text-gray-900">
+                    Daftar Pengajuan Magang / PKL
+                </h1>
+                <p class="text-sm text-gray-600 mt-1">
+                    Kelola pengajuan magang dari peserta (pending, disetujui, dan ditolak).
+                </p>
+            </div>
+        </div>
 
-    <h1>Daftar Pengajuan Magang / PKL</h1>
+        {{-- Notifikasi --}}
+        @if (session('success'))
+            <div class="bg-green-100 border border-green-200 text-green-800 text-sm px-4 py-3 rounded-xl">
+                {{ session('success') }}
+            </div>
+        @endif
 
-    @if (session('success'))
-        <p style="color: green">{{ session('success') }}</p>
-    @endif
+        @if (session('error'))
+            <div class="bg-red-100 border border-red-200 text-red-800 text-sm px-4 py-3 rounded-xl">
+                {{ session('error') }}
+            </div>
+        @endif
 
-    @if ($items->isEmpty())
-        <p>Belum ada pengajuan.</p>
-    @else
-        <table border="1" cellpadding="8" cellspacing="0">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nama Pengaju</th>
-                    <th>Email</th>
-                    <th>Tipe</th>
-                    <th>Instansi</th>
-                    <th>Periode Magang</th>
-                    <th>Surat Pengantar</th>
-                    <th>Status</th>
-                    <th>Alasan Penolakan</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($items as $item)
-                    <tr>    
-                        <td>{{ $item->id }}</td>
-                        <td>{{ $item->nama_pengaju }}</td>
-                        <td>{{ $item->email_pengaju }}</td>
-                        <td>{{ $item->tipe }}</td>
-                        <td>{{ $item->instansi ?? '-' }}</td>
-                        <td>
-                            @if ($item->tanggal_mulai && $item->tanggal_selesai)
-                                {{ $item->tanggal_mulai }} s/d {{ $item->tanggal_selesai }}
-                            @elseif ($item->tanggal_mulai)
-                                Mulai: {{ $item->tanggal_mulai }}
-                            @else
-                                -
-                            @endif
-                        </td>
-                        <td>
-                            @if ($item->surat_pengantar)
-                                <a href="{{ asset('storage/' . $item->surat_pengantar) }}" target="_blank">Lihat Surat</a>
-                            @else
-                                -
-                            @endif
-                        </td>
-                        <td>
-                            @if ($item->status === 'pending')
-                                <span style="color: orange">PENDING</span>
-                            @elseif ($item->status === 'approved')
-                                <span style="color: green">APPROVED</span>
-                            @else
-                                <span style="color: red">REJECTED</span>
-                            @endif
-                        </td>
-                        <td>
-                            {{ $item->alasan_penolakan ?? '-' }}
-                        </td>
-                        <td>
-                        @if ($item->status === 'pending')
-                            <!-- Form Approve -->
-                            <form action="{{ route('admin.pengajuan.updateStatus', $item->id) }}" method="POST" style="display:inline-block">
-                                @csrf
-                                <input type="hidden" name="status" value="approved">
-                                <button type="submit">Setujui</button>
-                            </form>
+        {{-- Tabel Pengajuan --}}
+        <div class="bg-white shadow rounded-xl p-6">
+            @if ($items->isEmpty())
+                <p class="text-sm text-gray-600">
+                    Belum ada pengajuan yang masuk.
+                </p>
+            @else
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">ID</th>
+                                <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">Nama Pengaju</th>
+                                <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">Email</th>
+                                <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">Tipe</th>
+                                <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">Instansi</th>
+                                <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">Periode Magang</th>
+                                <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">Surat Pengantar</th>
+                                <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">Status</th>
+                                <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">Alasan Penolakan</th>
+                                <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white">
+                            @foreach ($items as $item)
+                                @php
+                                    $statusText = strtoupper($item->status);
+                                    $statusClass = match($item->status) {
+                                        'pending' => 'bg-amber-100 text-amber-800',
+                                        'approved' => 'bg-emerald-100 text-emerald-800',
+                                        'rejected' => 'bg-red-100 text-red-800',
+                                        default => 'bg-gray-100 text-gray-800',
+                                    };
+                                @endphp
+                                <tr class="border-t border-gray-200">
+                                    <td class="px-3 py-2 text-xs text-gray-700 font-mono">
+                                        {{ $item->id }}
+                                    </td>
+                                    <td class="px-3 py-2 text-sm text-gray-900">
+                                        {{ $item->nama_pengaju }}
+                                    </td>
+                                    <td class="px-3 py-2 text-xs text-gray-700">
+                                        {{ $item->email_pengaju }}
+                                    </td>
+                                    <td class="px-3 py-2 text-xs text-gray-700">
+                                        {{ $item->tipe }}
+                                    </td>
+                                    <td class="px-3 py-2 text-xs text-gray-700">
+                                        {{ $item->instansi ?? '-' }}
+                                    </td>
+                                    <td class="px-3 py-2 text-xs text-gray-700">
+                                        @if ($item->tanggal_mulai && $item->tanggal_selesai)
+                                            {{ $item->tanggal_mulai }} s/d {{ $item->tanggal_selesai }}
+                                        @elseif ($item->tanggal_mulai)
+                                            Mulai: {{ $item->tanggal_mulai }}
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
+                                    <td class="px-3 py-2 text-xs">
+                                        @if ($item->surat_pengantar)
+                                            <a href="{{ asset('storage/' . $item->surat_pengantar) }}"
+                                               target="_blank"
+                                               class="text-blue-600 hover:underline">
+                                                Lihat Surat
+                                            </a>
+                                        @else
+                                            <span class="text-gray-400">-</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-3 py-2 text-xs">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full font-semibold {{ $statusClass }}">
+                                            {{ $statusText }}
+                                        </span>
+                                    </td>
+                                    <td class="px-3 py-2 text-xs text-gray-700">
+                                        {{ $item->alasan_penolakan ?? '-' }}
+                                    </td>
+                                    <td class="px-3 py-2 text-xs text-gray-700">
+                                        @if ($item->status === 'pending')
+                                            <div class="flex flex-col gap-2">
 
-                            <!-- Form Reject -->
-                            <form action="{{ route('admin.pengajuan.updateStatus', $item->id) }}" method="POST" style="display:inline-block; margin-top:4px">
-                                @csrf
-                                <input type="hidden" name="status" value="rejected">
-                                <input type="text" name="alasan_penolakan" placeholder="Alasan..." style="width:120px">
-                                <button type="submit">Tolak</button>
-                            </form>
-                        @else
-                            <!-- Kalau sudah approved/rejected, tidak ada tombol aksi -->
-                            <em>Status final</em>
-                        @endif
-                    </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    @endif
-</body>
-</html>
+                                                {{-- Form Approve --}}
+                                                <form action="{{ route('admin.pengajuan.updateStatus', $item->id) }}"
+                                                      method="POST"
+                                                      class="inline">
+                                                    @csrf
+                                                    <input type="hidden" name="status" value="approved">
+                                                    <button type="submit"
+                                                            class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-700 transition">
+                                                        Setujui
+                                                    </button>
+                                                </form>
+
+                                                {{-- Form Reject --}}
+                                                <form action="{{ route('admin.pengajuan.updateStatus', $item->id) }}"
+                                                      method="POST"
+                                                      class="inline flex flex-col gap-1">
+                                                    @csrf
+                                                    <input type="hidden" name="status" value="rejected">
+                                                    <input
+                                                        type="text"
+                                                        name="alasan_penolakan"
+                                                        placeholder="Alasan..."
+                                                        class="border border-gray-300 rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-red-400 focus:border-red-400"
+                                                    >
+                                                    <button type="submit"
+                                                            class="inline-flex items-center justify-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-600 text-white hover:bg-red-700 transition">
+                                                        Tolak
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        @else
+                                            <span class="italic text-gray-500">Status final</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+        </div>
+
+    </div>
+@endsection

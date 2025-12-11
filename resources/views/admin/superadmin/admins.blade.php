@@ -1,58 +1,84 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Superadmin - Manajemen Admin</title>
-</head>
-<body>
-    <nav style="margin-bottom: 16px;">
-        <a href="{{ route('admin.pengajuan.index') }}">Halaman Pengajuan</a> |
-        <a href="{{ route('admin.absensi.index') }}">Halaman Absensi</a> |
-        <a href="{{ route('admin.peserta.index') }}">Daftar Peserta</a> |
-        <a href="{{ route('superadmin.admins.index') }}">Manajemen Admin</a>
-    </nav>
+@extends('layouts.admin')
 
-    <h1>Manajemen Admin</h1>
+@section('content')
+    <div class="space-y-6">
 
-    @if (session('success'))
-        <p style="color: green">{{ session('success') }}</p>
-    @endif
+        {{-- Header --}}
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-semibold text-gray-900">
+                    Manajemen Admin
+                </h1>
+                <p class="text-sm text-gray-600 mt-1">
+                    Kelola akun admin yang memiliki akses ke panel SIMAGANG.
+                </p>
+            </div>
+            <div>
+                <a href="{{ route('superadmin.admins.create') }}"
+                   class="inline-flex items-center px-4 py-2.5 rounded-lg text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition">
+                    + Tambah Admin Baru
+                </a>
+            </div>
+        </div>
 
-    @if (session('error'))
-        <p style="color: red">{{ session('error') }}</p>
-    @endif
+        {{-- Notifikasi --}}
+        @if (session('success'))
+            <div class="bg-green-100 border border-green-200 text-green-800 text-sm px-4 py-3 rounded-xl">
+                {{ session('success') }}
+            </div>
+        @endif
 
-    <p>
-        <a href="{{ route('superadmin.admins.create') }}">+ Tambah Admin Baru</a>
-    </p>
+        @if (session('error'))
+            <div class="bg-red-100 border border-red-200 text-red-800 text-sm px-4 py-3 rounded-xl">
+                {{ session('error') }}
+            </div>
+        @endif
 
-    @if ($admins->isEmpty())
-        <p>Belum ada admin terdaftar.</p>
-    @else
-        <table border="1" cellpadding="6" cellspacing="0">
-            <thead>
-                <tr>
-                    <th>Nama</th>
-                    <th>Email</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($admins as $admin)
-                    <tr>
-                        <td>{{ $admin->name }}</td>
-                        <td>{{ $admin->email }}</td>
-                        <td>
-                            <form action="{{ route('superadmin.admins.destroy', $admin->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus admin ini?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit">Hapus Admin</button>
-                            </form>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    @endif
+        {{-- Tabel Admin --}}
+        <div class="bg-white shadow rounded-xl p-6">
+            @if ($admins->isEmpty())
+                <p class="text-sm text-gray-600">
+                    Belum ada admin terdaftar.
+                </p>
+            @else
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">Nama</th>
+                                <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">Email</th>
+                                <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white">
+                            @foreach ($admins as $admin)
+                                <tr class="border-t border-gray-200">
+                                    <td class="px-3 py-2 text-sm text-gray-900">
+                                        {{ $admin->name }}
+                                    </td>
+                                    <td class="px-3 py-2 text-xs text-gray-700">
+                                        {{ $admin->email }}
+                                    </td>
+                                    <td class="px-3 py-2 text-xs">
+                                        <form action="{{ route('superadmin.admins.destroy', $admin->id) }}"
+                                              method="POST"
+                                              onsubmit="return confirm('Yakin ingin menghapus admin ini?');"
+                                              class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                    class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-600 text-white hover:bg-red-700 transition">
+                                                Hapus
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+        </div>
 
-</body>
-</html>
+    </div>
+@endsection

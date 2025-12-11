@@ -36,7 +36,10 @@ class AdminParticipantController extends Controller
     // Detail satu peserta + periode + riwayat absensi
     public function show($id)
     {
-        $user = User::where('role', 'peserta')->findOrFail($id);
+        $user = User::where('role', 'peserta')
+            ->where('id', $id)
+            ->firstOrFail();
+
 
         // Cari pengajuan yang disetujui berdasarkan email peserta
         $pengajuan = InternshipRequest::where('email_pengaju', $user->email)
@@ -53,7 +56,9 @@ class AdminParticipantController extends Controller
 
     public function exportAbsensi($id)
 {
-    $user = User::where('role', 'peserta')->findOrFail($id);
+    $user = User::where('role', 'peserta')
+        ->where('id', $id)
+        ->firstOrFail();
 
     $absensi = Attendance::where('user_id', $user->id)
         ->orderBy('tanggal', 'asc')

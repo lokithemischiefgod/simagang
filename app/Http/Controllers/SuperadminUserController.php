@@ -48,7 +48,9 @@ class SuperadminUserController extends Controller
     {
         $user = auth()->user();
 
-        $admin = User::where('role', 'admin')->findOrFail($id);
+        $admin = User::where('role', 'admin')
+        ->where('id', $id)
+        ->firstOrFail();    
 
         // Jaga-jaga: jangan sampai superadmin hapus dirinya sendiri (kalau dia admin)
         if ($user->id === $admin->id) {
