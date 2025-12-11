@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\InternshipRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\PengajuanStatusMail;
+use App\Models\User;
+use App\Mail\PengajuanBaruMail;
 
 class InternshipRequestController extends Controller
 {
@@ -20,6 +24,7 @@ class InternshipRequestController extends Controller
             'nama_pengaju'    => 'required',
             'email_pengaju'   => 'required|email',
             'tipe'            => 'required|in:sekolah,universitas,mandiri',
+            'instansi'        => 'nullable|string',
             'surat_pengantar' => 'nullable|file|mimes:pdf',
             'tanggal_mulai'   => 'required|date',
             'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
@@ -27,10 +32,10 @@ class InternshipRequestController extends Controller
 
         $path = null;
         if ($request->hasFile('surat_pengantar')) {
-            $path = $request->file('surat_pengantar')->store('surat', 'public');
+            $path = $request->file('surat_pengantar')->store('surat_pengantar', 'public');
         }
 
-        InternshipRequest::create([
+        $pengajuan = InternshipRequest::create([
             'nama_pengaju'    => $request->nama_pengaju,
             'email_pengaju'   => $request->email_pengaju,
             'tipe'            => $request->tipe,
@@ -38,10 +43,25 @@ class InternshipRequestController extends Controller
             'surat_pengantar' => $path,
             'tanggal_mulai'   => $request->tanggal_mulai,
             'tanggal_selesai' => $request->tanggal_selesai,
+            'status'          => 'pending',
         ]);
 
-        return redirect()->back()->with('success', 'Pengajuan berhasil dikirim!');
+        // ✅ KIRIM EMAIL NOTIFIKASI KE ADMIN & SUPERADMIN
+        try {
+            // Ambil semua admin & superadmin
+            $admins = User::whereIn('role', ['admin', 'superadmin'])->get();
+
+            foreach ($admins as $admin) {
+                Mail::to($admin->email)->send(new PengajuanBaruMail($pengajuan));
+            }
+        } catch (\Exception $e) {
+            // Kalau mau debug:
+            // logger()->error('Gagal kirim email pengajuan baru: ' . $e->getMessage());
+        }
+
+        return redirect()->back()->with('success', 'Pengajuan magang berhasil dikirim. Silakan menunggu proses verifikasi.');
     }
+
 
     // ✅ TAMPILKAN DAFTAR PENGAJUAN (HALAMAN ADMIN)
     public function index()
@@ -54,47 +74,59 @@ class InternshipRequestController extends Controller
 
     // ✅ UBAH STATUS PENGAJUAN (APPROVE / REJECT)
     public function updateStatus(Request $request, $id)
-{
-    $request->validate([
-        'status' => 'required|in:approved,rejected',
-        'alasan_penolakan' => 'nullable|string',
-    ]);
+    {
+        $request->validate([
+            'status' => 'required|in:approved,rejected',
+            'alasan_penolakan' => 'nullable|string',
+        ]);
 
-    $item = InternshipRequest::findOrFail($id);
+        $item = InternshipRequest::findOrFail($id);
 
-    if ($item->status !== 'pending') {
-        return back()->with('error', 'Status pengajuan sudah final dan tidak dapat diubah lagi.');
-    }
-    
-    $dataUpdate = [
-        'status' => $request->status,
-    ];
-
-    if ($request->status === 'rejected') {
-        $dataUpdate['alasan_penolakan'] = $request->alasan_penolakan;
-    } else {
-        $dataUpdate['alasan_penolakan'] = null;
-    }
-
-    $item->update($dataUpdate);
-
-    // ⭐ Buat akun peserta otomatis jika disetujui
-    if ($request->status === 'approved') {
-
-        $existingUser = \App\Models\User::where('email', $item->email_pengaju)->first();
-
-        if (!$existingUser) {
-            \App\Models\User::create([
-                'name' => $item->nama_pengaju,
-                'email' => $item->email_pengaju,
-                'password' => bcrypt('password123'),  // default password
-                'role' => 'peserta',
-            ]);
+        // Hanya boleh ubah kalau masih pending
+        if ($item->status !== 'pending') {
+            return back()->with('error', 'Status pengajuan sudah final dan tidak dapat diubah lagi.');
         }
+
+        $dataUpdate = [
+            'status' => $request->status,
+        ];
+
+        if ($request->status === 'rejected') {
+            $dataUpdate['alasan_penolakan'] = $request->alasan_penolakan;
+        } else {
+            $dataUpdate['alasan_penolakan'] = null;
+        }
+
+        // Update status & alasan di database
+        $item->update($dataUpdate);
+
+        // Jika status disetujui, buat akun peserta otomatis (seperti sebelumnya)
+        if ($request->status === 'approved') {
+
+            $existingUser = \App\Models\User::where('email', $item->email_pengaju)->first();
+
+            if (!$existingUser) {
+                \App\Models\User::create([
+                    'name'                 => $item->nama_pengaju,
+                    'email'                => $item->email_pengaju,
+                    'password'             => bcrypt('password123'),  // default password
+                    'role'                 => 'peserta',
+                    'must_change_password' => true,                   // kalau pakai mekanisme force change password
+                ]);
+            }
+        }
+
+        // ✅ Kirim email pemberitahuan ke pengaju
+        try {
+            Mail::to($item->email_pengaju)->send(new PengajuanStatusMail($item));
+        } catch (\Exception $e) {
+            // Kalau gagal kirim email, sistem tetap jalan, tapi kita bisa info admin
+            // dd($e->getMessage()); // untuk debug kalau perlu
+        }
+
+        return back()->with('success', 'Status pengajuan berhasil diupdate dan email notifikasi telah dikirim (jika konfigurasi email sudah benar).');
     }
 
-    return back()->with('success', 'Status pengajuan berhasil diupdate.');
-}
 
 }
     
