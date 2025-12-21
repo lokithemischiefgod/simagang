@@ -50,6 +50,7 @@ class Kernel extends HttpKernel
         'admin' => \App\Http\Middleware\AdminMiddleware::class,
         'peserta' => \App\Http\Middleware\PesertaMiddleware::class,
         'superadmin' => \App\Http\Middleware\SuperadminMiddleware::class,
+        'force.password' => \App\Http\Middleware\ForceChangePassword::class,
 
     ];
 }

@@ -26,15 +26,15 @@ Route::post('/pengajuan', [InternshipRequestController::class, 'store'])
 
 Route::get('/dashboard', function () {
     return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified', 'force.password'])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'force.password'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::middleware(['auth', 'admin'])->group(function() {
+Route::middleware(['auth', 'force.password', 'admin'])->group(function() {
     Route::get('/admin/pengajuan', [InternshipRequestController::class, 'index'])
         ->name('admin.pengajuan.index');
 
@@ -57,16 +57,15 @@ Route::middleware(['auth', 'admin'])->group(function() {
         ->name('admin.peserta.exportAbsensi');
 });
 
-Route::middleware(['auth', 'peserta'])->group(function () {
+Route::middleware(['auth', 'force.password', 'peserta'])->group(function () {
     Route::get('/peserta/dashboard', [AttendanceController::class, 'index'])->name('peserta.dashboard');
-
     Route::post('/peserta/absensi/check-in', [AttendanceController::class, 'checkIn'])->name('peserta.checkin');
     Route::post('/peserta/absensi/check-out', [AttendanceController::class, 'checkOut'])->name('peserta.checkout');
     Route::post('/peserta/absensi/izin', [AttendanceController::class, 'izin'])->name('peserta.izin');
     Route::post('/peserta/absensi/turun-lapangan', [AttendanceController::class, 'turunLapangan'])->name('peserta.turunlapangan');
 });
 
-Route::middleware(['auth', 'superadmin'])->group(function () {
+Route::middleware(['auth', 'force.password', 'superadmin'])->group(function () {
     Route::get('/superadmin/admins', [SuperadminUserController::class, 'index'])
         ->name('superadmin.admins.index');
 
