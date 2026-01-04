@@ -9,6 +9,7 @@ class InternshipRequest extends Model
     protected $fillable = [
         'nama_pengaju',
         'email_pengaju',
+        'no_wa',
         'tipe',
         'instansi',
         'surat_pengantar',

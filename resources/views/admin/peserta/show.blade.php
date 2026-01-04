@@ -1,6 +1,6 @@
-@extends('layouts.admin')
+<x-app-layout>
 
-@section('content')
+<div class="max-w-7xl mx-auto px-4 py-6">
     <div class="space-y-6">
 
         {{-- Header --}}
@@ -34,6 +34,18 @@
                 <div>
                     <p class="text-gray-500 text-xs uppercase">Email</p>
                     <p class="mt-1 text-gray-900">{{ $user->email }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-500">WhatsApp</p>
+                    @if ($pengajuan?->no_wa)
+                    <a href="https://wa.me/{{ $pengajuan->no_wa }}"
+                    target="_blank"
+                    class="text-emerald-600 hover:underline font-medium">
+                        {{ $pengajuan->no_wa }}
+                    </a>
+                @else
+                    <p class="text-sm text-gray-500 italic">Belum ada nomor WhatsApp.</p>
+                @endif
                 </div>
                 <div>
                     <p class="text-gray-500 text-xs uppercase">Role</p>
@@ -172,4 +184,5 @@
         </div>
 
     </div>
-@endsection
+</div>
+</x-app-layout>

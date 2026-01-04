@@ -20,9 +20,21 @@
                         Formulir pengajuan untuk siswa, mahasiswa, maupun magang mandiri.
                     </p>
                 </div>
-                <div class="text-xs text-gray-500">
-                    {{-- Jika nanti mau tambah link login admin/peserta, bisa di sini --}}
+                <div class="flex items-center gap-4">
+                    <a href="{{ url('/') }}"
+                    class="inline-flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 transition">
+                        ← Landing Page
+                    </a>
+
+                    {{-- opsional: login --}}
+                    {{-- 
+                    <a href="{{ route('login') }}"
+                    class="text-sm text-indigo-600 hover:text-indigo-800">
+                        Login
+                    </a>
+                    --}}
                 </div>
+
             </div>
         </header>
 
@@ -103,6 +115,21 @@
                                    placeholder="Alamat email aktif">
                         </div>
 
+                        {{-- Nomor WhatsApp --}}
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">
+                                Nomor WhatsApp <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text"
+                                name="no_wa"
+                                value="{{ old('no_wa') }}"
+                                class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400"
+                                placeholder="Contoh: 08xxxxxxxxxx atau +62xxxxxxxxxx">
+                            <p class="text-xs text-gray-500 mt-1">
+                                Wajib nomor WhatsApp aktif. Format yang diterima: 08…, 62…, atau +62…
+                            </p>
+                        </div>
+
                         {{-- Tipe Pengajuan --}}
                         <div>
                             <label class="block text-xs font-medium text-gray-700 mb-1">
@@ -161,22 +188,9 @@
                                    accept="application/pdf"
                                    class="w-full text-sm text-gray-700">
                             <p class="text-xs text-gray-500 mt-1">
-                                Format file: PDF. Ukuran maksimal sesuai ketentuan kantor.
+                                Format file: PDF.
                             </p>
                         </div>
-
-                        {{-- Catatan Tambahan Opsional (kalau mau dipakai nanti) --}}
-                        {{-- 
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1">
-                                Catatan Tambahan (opsional)
-                            </label>
-                            <textarea name="catatan"
-                                      rows="3"
-                                      class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400"
-                                      placeholder="Contoh: jurusan, fokus magang, dsb."></textarea>
-                        </div>
-                        --}}
 
                         {{-- Persetujuan --}}
                         <div class="flex items-start space-x-2">

@@ -10,9 +10,12 @@ use Illuminate\Http\Request;
 class AdminParticipantController extends Controller
 {
     // Daftar semua peserta magang (role = peserta)
+    // Daftar semua peserta magang (role = peserta)
     public function index(Request $request)
     {
         $q = $request->input('q', '');
+        $statusFilter = $request->input('status', 'all'); // all | active | inactive
+        $today = now()->toDateString();
 
         $query = User::where('role', 'peserta');
 
@@ -25,13 +28,35 @@ class AdminParticipantController extends Controller
 
         $peserta = $query->orderBy('name', 'asc')->get();
 
-        // Ambil data pengajuan untuk mendapatkan periode magang, via email
-        $pengajuanPerEmail = InternshipRequest::where('status', 'approved')
-            ->get()
-            ->keyBy('email_pengaju');
+        // Ambil data pengajuan approved untuk periode magang, via email
+        $pengajuanApproved = InternshipRequest::where('status', 'approved')->get();
 
-        return view('admin.peserta.index', compact('peserta', 'pengajuanPerEmail', 'q'));
+        // Key by email
+        $pengajuanPerEmail = $pengajuanApproved->keyBy('email_pengaju');
+
+        // ✅ Filter aktif / tidak aktif berbasis tanggal_selesai
+        if ($statusFilter !== 'all') {
+            $peserta = $peserta->filter(function ($p) use ($pengajuanPerEmail, $statusFilter, $today) {
+                $req = $pengajuanPerEmail[$p->email] ?? null;
+
+                // kalau tidak ada pengajuan approved, anggap "tidak bisa ditentukan"
+                // biar aman: masukkan ke "active" saja? atau exclude? -> aku exclude dari active/inactive
+                if (!$req || !$req->tanggal_selesai) {
+                    return false;
+                }
+
+                $isInactive = $req->tanggal_selesai < $today;
+
+                if ($statusFilter === 'inactive') return $isInactive;
+                if ($statusFilter === 'active')   return !$isInactive;
+
+                return true;
+            })->values();
+        }
+
+        return view('admin.peserta.index', compact('peserta', 'pengajuanPerEmail', 'q', 'statusFilter'));
     }
+
 
     // Detail satu peserta + periode + riwayat absensi
     public function show($id)
@@ -102,5 +127,68 @@ class AdminParticipantController extends Controller
 
     return response()->streamDownload($callback, $fileName, $headers);
 }
+
+public function bulkDestroy(Request $request)
+{
+    $request->validate([
+        'ids' => 'required|array',
+        'ids.*' => 'integer',
+    ]);
+
+    $today = now()->toDateString();
+
+    // Ambil peserta yang dipilih (pastikan role peserta)
+    $users = User::where('role', 'peserta')
+        ->whereIn('id', $request->ids)
+        ->get();
+
+    if ($users->isEmpty()) {
+        return back()->with('error', 'Tidak ada peserta yang valid untuk dihapus.');
+    }
+
+    // Ambil pengajuan approved untuk email-email tersebut
+    $emails = $users->pluck('email')->values()->all();
+
+    $reqByEmail = InternshipRequest::where('status', 'approved')
+        ->whereIn('email_pengaju', $emails)
+        ->get()
+        ->keyBy('email_pengaju');
+
+    // Hanya boleh hapus yang benar-benar tidak aktif (tanggal_selesai < hari ini)
+    $deletableIds = [];
+    $skipped = 0;
+
+    foreach ($users as $u) {
+        $req = $reqByEmail[$u->email] ?? null;
+
+        if (!$req || !$req->tanggal_selesai) {
+            $skipped++;
+            continue;
+        }
+
+        $isInactive = $req->tanggal_selesai < $today;
+        if (!$isInactive) {
+            $skipped++;
+            continue;
+        }
+
+        $deletableIds[] = $u->id;
+    }
+
+    if (empty($deletableIds)) {
+        return back()->with('error', 'Tidak ada peserta “Tidak Aktif” yang bisa dihapus dari pilihan tersebut.');
+    }
+
+    // Hapus (cascade akan ikut hapus attendance/work_logs jika FK kamu benar)
+    $deletedCount = User::whereIn('id', $deletableIds)->delete();
+
+    $msg = "Berhasil menghapus {$deletedCount} peserta tidak aktif.";
+    if ($skipped > 0) {
+        $msg .= " ({$skipped} peserta dilewati karena masih aktif / tidak punya periode selesai).";
+    }
+
+    return back()->with('success', $msg);
+}
+
 
 }

@@ -1,6 +1,6 @@
-@extends('layouts.admin')
+<x-app-layout>
 
-@section('content')
+<div class="max-w-7xl mx-auto px-4 py-6">
     <div class="space-y-6">
 
         {{-- Header --}}
@@ -42,6 +42,7 @@
                                 <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">ID</th>
                                 <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">Nama Pengaju</th>
                                 <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">Email</th>
+                                <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">No. WA</th>
                                 <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">Tipe</th>
                                 <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">Instansi</th>
                                 <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">Periode Magang</th>
@@ -71,6 +72,13 @@
                                     </td>
                                     <td class="px-3 py-2 text-xs text-gray-700">
                                         {{ $item->email_pengaju }}
+                                    </td>
+                                    <td class="px-3 py-2 text-xs text-gray-700">
+                                        <a href="https://wa.me/{{ $item->no_wa }}"
+                                        target="_blank"
+                                        class="text-emerald-700 hover:underline font-semibold">
+                                            {{ $item->no_wa }}
+                                        </a>
                                     </td>
                                     <td class="px-3 py-2 text-xs text-gray-700">
                                         {{ $item->tipe }}
@@ -153,4 +161,5 @@
         </div>
 
     </div>
-@endsection
+</div>
+</x-app-layout>
