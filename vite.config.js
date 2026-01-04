@@ -13,7 +13,7 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
     hmr: {
-      host: '192.168.1.25', // ganti dengan IP PC kamu
+      host: 'localhost', // ganti dengan IP PC kamu
       port: 5173,
     },
   },
