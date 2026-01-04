@@ -21,14 +21,34 @@ class InternshipRequestController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama_pengaju'    => 'required',
-            'email_pengaju'   => 'required|email',
+            'nama_pengaju'    => 'required|string|max:255',
+            'email_pengaju'   => 'required|email|max:255',
+            'no_wa'           => ['required', 'string', 'max:20', 'regex:/^(\+62|62|08)[0-9]{8,13}$/'],
             'tipe'            => 'required|in:sekolah,universitas,mandiri',
-            'instansi'        => 'nullable|string',
-            'surat_pengantar' => 'nullable|file|mimes:pdf',
+            'instansi'        => 'nullable|string|max:255',
+            'surat_pengantar' => 'nullable|file|mimes:pdf|max:2048',
             'tanggal_mulai'   => 'required|date',
             'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
+        ], [
+            'no_wa.regex' => 'Nomor WhatsApp harus diawali 08, 62, atau +62 dan hanya berisi angka.',
         ]);
+
+        // ✅ Normalisasi nomor WA: simpan sebagai 62xxxxxxxxxx
+        $raw = $request->input('no_wa');
+        $digits = preg_replace('/\D+/', '', $raw); // buang selain angka
+
+        // 08xxxx -> 62xxxx
+        if (str_starts_with($digits, '08')) {
+            $digits = '62' . substr($digits, 1);
+        }
+
+        // kalau user input +62xxxx, preg_replace sudah jadi 62xxxx (aman)
+        // pastikan tetap 62...
+        if (!str_starts_with($digits, '62')) {
+            return back()
+                ->withErrors(['no_wa' => 'Nomor WhatsApp harus menggunakan format 08 / 62 / +62.'])
+                ->withInput();
+        }
 
         $path = null;
         if ($request->hasFile('surat_pengantar')) {
@@ -38,6 +58,7 @@ class InternshipRequestController extends Controller
         $pengajuan = InternshipRequest::create([
             'nama_pengaju'    => $request->nama_pengaju,
             'email_pengaju'   => $request->email_pengaju,
+            'no_wa'           => $digits, // ✅ WA tersimpan
             'tipe'            => $request->tipe,
             'instansi'        => $request->instansi,
             'surat_pengantar' => $path,
@@ -48,19 +69,18 @@ class InternshipRequestController extends Controller
 
         // ✅ KIRIM EMAIL NOTIFIKASI KE ADMIN & SUPERADMIN
         try {
-            // Ambil semua admin & superadmin
             $admins = User::whereIn('role', ['admin', 'superadmin'])->get();
 
             foreach ($admins as $admin) {
                 Mail::to($admin->email)->send(new PengajuanBaruMail($pengajuan));
             }
         } catch (\Exception $e) {
-            // Kalau mau debug:
             // logger()->error('Gagal kirim email pengajuan baru: ' . $e->getMessage());
         }
 
         return redirect()->back()->with('success', 'Pengajuan magang berhasil dikirim. Silakan menunggu proses verifikasi.');
     }
+
 
 
     // ✅ TAMPILKAN DAFTAR PENGAJUAN (HALAMAN ADMIN)

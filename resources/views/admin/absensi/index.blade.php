@@ -1,6 +1,6 @@
-@extends('layouts.admin')
+<x-app-layout>
 
-@section('content')
+<div class="max-w-7xl mx-auto px-4 py-6">
     <div class="space-y-6">
 
         {{-- Header --}}
@@ -50,9 +50,11 @@
                     <select name="status"
                             class="w-full border rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400">
                         <option value="">-- Semua --</option>
-                        <option value="hadir" {{ $status === 'hadir' ? 'selected' : '' }}>Hadir</option>
+                        <option value="standby_kantor" {{ $status === 'standby_kantor' ? 'selected' : '' }}>Standby Kantor</option>
                         <option value="izin" {{ $status === 'izin' ? 'selected' : '' }}>Izin</option>
                         <option value="turun_lapangan" {{ $status === 'turun_lapangan' ? 'selected' : '' }}>Turun Lapangan</option>
+                        {{-- opsional kalau kamu ingin filter checkout --}}
+                        <option value="checkout" {{ $status === 'checkout' ? 'selected' : '' }}>Checkout</option>
                     </select>
                 </div>
 
@@ -103,6 +105,8 @@
                                 <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">Jam Masuk</th>
                                 <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">Jam Keluar</th>
                                 <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">Keterangan</th>
+                                <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">Aktivitas Terakhir</th>
+                                <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white">
@@ -110,11 +114,14 @@
                                 @php
                                     $statusUpper = strtoupper($row->status);
                                     $badgeClass = match($row->status) {
-                                        'hadir' => 'bg-emerald-100 text-emerald-800',
+                                        'standby_kantor' => 'bg-emerald-100 text-emerald-800',
                                         'izin' => 'bg-amber-100 text-amber-800',
                                         'turun_lapangan' => 'bg-blue-100 text-blue-800',
+                                        'checkout' => 'bg-slate-100 text-slate-800',
                                         default => 'bg-gray-100 text-gray-800',
                                     };
+
+                                    $lastLog = $row->workLogs->first(); // karena controller limit(1)
                                 @endphp
                                 <tr class="border-t border-gray-200">
                                     <td class="px-3 py-2 text-sm text-gray-900">
@@ -137,7 +144,21 @@
                                     <td class="px-3 py-2 text-xs text-gray-700">
                                         {{ $row->keterangan ?? '-' }}
                                     </td>
-                                </tr>
+                                    <td class="px-3 py-2 text-xs text-gray-700">
+                                        @if ($row->latestWorkLog)
+                                            {{ $row->latestWorkLog->jam_mulai }} — {{ $row->latestWorkLog->aktivitas }}
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
+
+                                    <td class="px-3 py-2 text-xs">
+                                        <a href="{{ route('admin.absensi.aktivitas', $row->id) }}"
+                                        class="text-indigo-600 hover:underline font-semibold">
+                                            Detail
+                                        </a>
+                                    </td>
+                                                                    </tr>
                             @endforeach
                         </tbody>
                     </table>
@@ -146,4 +167,5 @@
         </div>
 
     </div>
-@endsection
+</div>
+</x-app-layout>

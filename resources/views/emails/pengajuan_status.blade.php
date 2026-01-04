@@ -3,7 +3,7 @@
 
 Halo {{ $pengajuan->nama_pengaju }},
 
-Berikut adalah status terbaru pengajuan magang/PKL Anda di **{{ $pengajuan->instansi ?? 'Instansi Tujuan' }}**.
+Berikut adalah status terbaru pengajuan magang/PKL Anda di **Lintasarta**.
 
 @switch($pengajuan->status)
     @case('approved')

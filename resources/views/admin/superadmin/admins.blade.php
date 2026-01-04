@@ -1,6 +1,6 @@
-@extends('layouts.admin')
+<x-app-layout>
 
-@section('content')
+<div class="max-w-7xl mx-auto px-4 py-6">
     <div class="space-y-6">
 
         {{-- Header --}}
@@ -81,4 +81,5 @@
         </div>
 
     </div>
-@endsection
+</div>
+</x-app-layout>

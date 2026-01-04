@@ -1,6 +1,6 @@
-@extends('layouts.admin')
+<x-app-layout>
 
-@section('content')
+<div class="max-w-7xl mx-auto px-4 py-6">
     <div class="space-y-6">
 
         {{-- Header --}}
@@ -31,21 +31,35 @@
         {{-- Filter --}}
         <div class="bg-white shadow rounded-xl p-6">
             <form method="GET" action="{{ route('admin.peserta.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                <div class="md:col-span-3">
+                <div class="md:col-span-2">
                     <label class="block text-xs font-medium text-gray-700 mb-1">
                         Cari Peserta (Nama / Email)
                     </label>
                     <input type="text" name="q" value="{{ $q }}" placeholder="Nama atau email"
-                           class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400">
+                        class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400">
                 </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-gray-700 mb-1">
+                        Status Peserta
+                    </label>
+                    <select name="status"
+                            class="w-full border rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400">
+                        <option value="all" {{ ($statusFilter ?? 'all') === 'all' ? 'selected' : '' }}>Semua</option>
+                        <option value="active" {{ ($statusFilter ?? 'all') === 'active' ? 'selected' : '' }}>Aktif</option>
+                        <option value="inactive" {{ ($statusFilter ?? 'all') === 'inactive' ? 'selected' : '' }}>Tidak Aktif</option>
+                    </select>
+                </div>
+
                 <div>
                     <button type="submit"
                             class="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-lg text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition">
-                        Cari
+                        Terapkan
                     </button>
                 </div>
             </form>
         </div>
+
 
         {{-- Tabel Peserta --}}
         <div class="bg-white shadow rounded-xl p-6">
@@ -54,58 +68,138 @@
                     Belum ada peserta magang yang terdaftar.
                 </p>
             @else
-                <div class="overflow-x-auto">
-                    <table class="min-w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">Nama</th>
-                                <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">Email</th>
-                                <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">Instansi Asal</th>
-                                <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">Periode Magang</th>
-                                <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white">
-                            @foreach ($peserta as $p)
-                                @php
-                                    $req = $pengajuanPerEmail[$p->email] ?? null;
-                                @endphp
-                                <tr class="border-t border-gray-200">
-                                    <td class="px-3 py-2 text-sm text-gray-900">
-                                        {{ $p->name }}
-                                    </td>
-                                    <td class="px-3 py-2 text-xs text-gray-700">
-                                        {{ $p->email }}
-                                    </td>
-                                    <td class="px-3 py-2 text-xs text-gray-700">
-                                        @if ($req)
-                                            {{ $req->instansi ?? '-' }}
-                                        @else
-                                            <span class="text-gray-400">-</span>
-                                        @endif
-                                    </td>
-                                    <td class="px-3 py-2 text-xs text-gray-700">
-                                        @if ($req && $req->tanggal_mulai && $req->tanggal_selesai)
-                                            {{ $req->tanggal_mulai }} s/d {{ $req->tanggal_selesai }}
-                                        @elseif ($req && $req->tanggal_mulai)
-                                            Mulai: {{ $req->tanggal_mulai }}
-                                        @else
-                                            <span class="text-gray-400">-</span>
-                                        @endif
-                                    </td>
-                                    <td class="px-3 py-2 text-xs">
-                                        <a href="{{ route('admin.peserta.show', $p->id) }}"
-                                           class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-700 text-white hover:bg-slate-800 transition">
-                                            Lihat Detail
-                                        </a>
-                                    </td>
+
+                {{-- Bulk Delete Form --}}
+                <form method="POST" action="{{ route('admin.peserta.bulkDestroy') }}" id="bulkDeleteForm">
+                    @csrf
+                    @method('DELETE')
+
+                    {{-- biar setelah delete, filter tetap sama (optional) --}}
+                    <input type="hidden" name="q" value="{{ $q }}">
+                    <input type="hidden" name="status" value="{{ $statusFilter ?? 'all' }}">
+
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="text-xs text-gray-500">
+                            Centang peserta <span class="font-semibold">Tidak Aktif</span> untuk dihapus.
+                        </div>
+
+                        <button type="submit"
+                                onclick="return confirm('Yakin hapus peserta yang dipilih? Data absensi & aktivitas ikut terhapus.')"
+                                class="inline-flex items-center px-3 py-2 rounded-lg text-xs font-semibold bg-rose-600 text-white hover:bg-rose-700 transition disabled:opacity-50"
+                                id="bulkDeleteBtn"
+                                disabled>
+                            Hapus Terpilih
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-3 py-2 border-b text-xs">
+                                        <input type="checkbox" id="checkAll" class="rounded border-gray-300">
+                                    </th>
+                                    <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">Nama</th>
+                                    <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">Email</th>
+                                    <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">Instansi Asal</th>
+                                    <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">Periode Magang</th>
+                                    <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">Status</th>
+                                    <th class="px-3 py-2 text-left font-semibold text-gray-700 border-b text-xs">Aksi</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+
+                            <tbody class="bg-white">
+                                @foreach ($peserta as $p)
+                                    @php
+                                        $req = $pengajuanPerEmail[$p->email] ?? null;
+                                        $today = now()->toDateString();
+                                        $isInactive = ($req && $req->tanggal_selesai) ? ($req->tanggal_selesai < $today) : null;
+                                    @endphp
+
+                                    <tr class="border-t border-gray-200">
+                                        <td class="px-3 py-2 text-xs">
+                                            @if($isInactive === true)
+                                                <input type="checkbox"
+                                                    name="ids[]"
+                                                    value="{{ $p->id }}"
+                                                    class="rowCheck rounded border-gray-300">
+                                            @else
+                                                <input type="checkbox"
+                                                    class="rounded border-gray-200 opacity-40"
+                                                    disabled>
+                                            @endif
+                                        </td>
+
+                                        <td class="px-3 py-2 text-sm text-gray-900">
+                                            {{ $p->name }}
+                                        </td>
+
+                                        <td class="px-3 py-2 text-xs text-gray-700">
+                                            {{ $p->email }}
+                                        </td>
+
+                                        <td class="px-3 py-2 text-xs text-gray-700">
+                                            {{ $req->instansi ?? '-' }}
+                                        </td>
+
+                                        <td class="px-3 py-2 text-xs text-gray-700">
+                                            @if ($req && $req->tanggal_mulai && $req->tanggal_selesai)
+                                                {{ $req->tanggal_mulai }} s/d {{ $req->tanggal_selesai }}
+                                            @elseif ($req && $req->tanggal_mulai)
+                                                Mulai: {{ $req->tanggal_mulai }}
+                                            @else
+                                                <span class="text-gray-400">-</span>
+                                            @endif
+                                        </td>
+
+                                        <td class="px-3 py-2 text-xs">
+                                            @if($isInactive === null)
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 font-semibold">-</span>
+                                            @elseif($isInactive)
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 font-semibold">Tidak Aktif</span>
+                                            @else
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-semibold">Aktif</span>
+                                            @endif
+                                        </td>
+
+                                        <td class="px-3 py-2 text-xs">
+                                            <a href="{{ route('admin.peserta.show', $p->id) }}"
+                                            class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-700 text-white hover:bg-slate-800 transition">
+                                                Lihat Detail
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </form>
+
+                {{-- JS kecil untuk check all + enable tombol --}}
+                <script>
+                    const checkAll = document.getElementById('checkAll');
+                    const btn = document.getElementById('bulkDeleteBtn');
+
+                    function refreshBtn() {
+                        const checked = document.querySelectorAll('.rowCheck:checked').length;
+                        btn.disabled = checked === 0;
+                    }
+
+                    checkAll?.addEventListener('change', (e) => {
+                        document.querySelectorAll('.rowCheck').forEach(cb => cb.checked = e.target.checked);
+                        refreshBtn();
+                    });
+
+                    document.querySelectorAll('.rowCheck').forEach(cb => {
+                        cb.addEventListener('change', refreshBtn);
+                    });
+
+                    refreshBtn();
+                </script>
+
             @endif
         </div>
 
     </div>
-@endsection
+</div>
+</x-app-layout>
