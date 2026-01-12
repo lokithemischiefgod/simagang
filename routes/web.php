@@ -96,6 +96,10 @@ Route::middleware(['auth', 'force.password', 'superadmin'])->group(function () {
 
     Route::delete('/superadmin/admins/{id}', [SuperadminUserController::class, 'destroy'])
         ->name('superadmin.admins.destroy');
+    
+    Route::patch('/superadmin/admins/{id}/promote',[SuperadminUserController::class, 'promoteToSuperadmin'])
+        ->name('superadmin.admins.promote');
+
 });
 
 

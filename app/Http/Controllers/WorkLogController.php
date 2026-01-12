@@ -8,13 +8,11 @@ use Illuminate\Http\Request;
 
 class WorkLogController extends Controller
 {
-    // ✅ Riwayat worklog peserta (filter per hari)
     public function index(Request $request)
     {
         $user = auth()->user();
         $tanggal = $request->input('tanggal', now()->toDateString());
 
-        // Filter berdasarkan tanggal absensi (lebih aman daripada created_at)
         $logs = WorkLog::with('attendance')
             ->where('user_id', $user->id)
             ->whereHas('attendance', function ($q) use ($tanggal) {
@@ -58,7 +56,6 @@ class WorkLogController extends Controller
     {
         $user = auth()->user();
 
-        // ✅ pastikan yang bisa finish hanya pemilik log
         $log = WorkLog::where('id', $id)
             ->where('user_id', $user->id)
             ->firstOrFail();

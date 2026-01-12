@@ -60,6 +60,20 @@
                                         {{ $admin->email }}
                                     </td>
                                     <td class="px-3 py-2 text-xs">
+                                        @if(auth()->user()->role === 'superadmin' && $admin->role === 'admin')
+                                        <form action="{{ route('superadmin.admins.promote', $admin->id) }}"
+                                            method="POST"
+                                            class="inline"
+                                            onsubmit="return confirm('Yakin jadikan {{ $admin->name }} sebagai Superadmin?')">
+                                            @csrf
+                                            @method('PATCH')
+
+                                            <button class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-lintasarta-blue text-white hover:bg-lintasarta-navy transition">
+                                                Jadikan Superadmin
+                                            </button>
+                                        </form>
+                                        @endif
+
                                         <form action="{{ route('superadmin.admins.destroy', $admin->id) }}"
                                               method="POST"
                                               onsubmit="return confirm('Yakin ingin menghapus admin ini?');"
