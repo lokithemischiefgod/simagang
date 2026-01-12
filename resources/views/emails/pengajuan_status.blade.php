@@ -1,44 +1,46 @@
 @component('mail::message')
-# Status Pengajuan Magang / PKL
+# Update Pengajuan Magang / PKL
 
-Halo {{ $pengajuan->nama_pengaju }},
+Halo **{{ $item->nama_pengaju }}**,
 
-Berikut adalah status terbaru pengajuan magang/PKL Anda di **Lintasarta**.
+@if($item->status === 'approved')
+Pengajuan magang Anda telah **DISETUJUI**.
 
-@switch($pengajuan->status)
-    @case('approved')
-        **Status: DITERIMA ✅**
+**Periode Magang:** {{ $item->tanggal_mulai }} s/d {{ $item->tanggal_selesai }}
 
-        Pengajuan magang/PKL Anda telah **disetujui**.
+@if(!empty($plainPassword))
+@component('mail::panel')
+### Akun SIMAGANG Anda
+- **Email:** {{ $item->email_pengaju }}
+- **Password sementara:** {{ $plainPassword }}
+@endcomponent
 
-        @if ($pengajuan->tanggal_mulai && $pengajuan->tanggal_selesai)
-        Periode magang Anda adalah:
+Silakan login dan **wajib ganti password** saat pertama kali masuk.
+@else
+Akun Anda sudah tersedia. Silakan login melalui tombol di bawah ini.
+@endif
 
-        **{{ $pengajuan->tanggal_mulai }} s/d {{ $pengajuan->tanggal_selesai }}**
-        @endif
+@component('mail::button', ['url' => url('/login')])
+Login ke SIMAGANG
+@endcomponent
 
-        Silakan menunggu informasi lebih lanjut dari pihak kantor terkait teknis pelaksanaan magang/PKL.
-        @break
+@elseif($item->status === 'rejected')
+Pengajuan magang Anda **DITOLAK**.
 
-    @case('rejected')
-        **Status: DITOLAK ❌**
+@if(!empty($item->alasan_penolakan))
+**Alasan:** {{ $item->alasan_penolakan }}
+@endif
 
-        Mohon maaf, pengajuan magang/PKL Anda **belum dapat kami terima** saat ini.
+Jika Anda ingin mengajukan ulang, silakan isi form kembali melalui tombol di bawah ini:
 
-        @if ($pengajuan->alasan_penolakan)
-        **Alasan penolakan:**
-        > {{ $pengajuan->alasan_penolakan }}
-        @endif
+@component('mail::button', ['url' => url('/pengajuan')])
+Isi Form Pengajuan
+@endcomponent
 
-        Anda dapat menghubungi pihak kantor jika membutuhkan informasi lebih lanjut.
-        @break
+@else
+Status pengajuan Anda saat ini: **{{ strtoupper($item->status) }}**
+@endif
 
-    @default
-        **Status:** {{ strtoupper($pengajuan->status) }}
-@endswitch
-
-Terima kasih,
-
-Salam,  
-**Sistem Magang Kantor**
+Terima kasih,<br>
+**SIMAGANG**
 @endcomponent
