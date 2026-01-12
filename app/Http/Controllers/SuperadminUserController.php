@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 
 class SuperadminUserController extends Controller
 {
-    // Daftar admin
     public function index()
     {
         $admins = User::where('role', 'admin')
@@ -17,13 +16,11 @@ class SuperadminUserController extends Controller
         return view('admin.superadmin.admins', compact('admins'));
     }
 
-    // Form tambah admin
     public function create()
     {
         return view('admin.superadmin.create_admin');
     }
 
-    // Simpan admin baru
     public function store(Request $request)
     {
         $request->validate([
@@ -43,7 +40,6 @@ class SuperadminUserController extends Controller
             ->with('success', 'Admin baru berhasil dibuat.');
     }
 
-    // Hapus admin
     public function destroy($id)
     {
         $user = auth()->user();
@@ -52,7 +48,6 @@ class SuperadminUserController extends Controller
         ->where('id', $id)
         ->firstOrFail();    
 
-        // Jaga-jaga: jangan sampai superadmin hapus dirinya sendiri (kalau dia admin)
         if ($user->id === $admin->id) {
             return back()->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
         }
@@ -61,4 +56,25 @@ class SuperadminUserController extends Controller
 
         return back()->with('success', 'Admin berhasil dihapus.');
     }
+    public function promoteToSuperadmin($id)
+    {
+        $currentUser = auth()->user();
+
+        if ($currentUser->id == $id) {
+            return back()->with('error', 'Anda tidak dapat mempromosikan diri sendiri.');
+        }
+
+        $admin = User::where('role', 'admin')->findOrFail($id);
+
+        $admin->update([
+            'role' => 'superadmin',
+            'must_change_password' => true,
+        ]);
+
+        return back()->with(
+            'success',
+            "{$admin->name} berhasil dipromosikan menjadi Superadmin."
+        );
+    }
+
 }

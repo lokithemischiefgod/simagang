@@ -8,28 +8,39 @@
 <body class="bg-gray-50">
 
     <div class="min-h-screen flex flex-col">
+    {{-- Top Bar --}}
+    <header class="bg-white border-b shadow-sm">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+            
+            {{-- Logo + Title --}}
+            <div class="flex items-center gap-3">
+                <img
+                    src="{{ asset('images/lintasarta.png') }}"
+                    alt="Lintasarta"
+                    class="h-10"
+                >
 
-        {{-- Top Bar --}}
-        <header class="bg-white border-b shadow-sm">
-            <div class="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
                 <div>
-                    <h1 class="text-lg font-semibold text-gray-900">
-                        SIMAGANG - Pengajuan Magang / PKL
+                    <h1 class="text-lg font-semibold text-lintasarta-navy">
+                        SIMAGANG
                     </h1>
-                    <p class="text-xs text-gray-500">
-                        Formulir pengajuan untuk siswa, mahasiswa, maupun magang mandiri.
+                    <p class="text-xs text-gray-600 leading-tight">
+                        Pengajuan Magang / PKL
                     </p>
                 </div>
-                <div class="flex items-center gap-4">
-                    <a href="{{ url('/') }}"
-                    class="inline-flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 transition">
-                        ← Landing Page
-                    </a>
-
-                </div>
-
             </div>
-        </header>
+
+            {{-- Back Link --}}
+            <div>
+                <a href="{{ url('/') }}"
+                class="inline-flex items-center gap-1 text-sm font-medium text-lintasarta-blue hover:text-lintasarta-navy transition">
+                    ← Landing Page
+                </a>
+            </div>
+
+        </div>
+    </header>
+
 
         {{-- Content --}}
         <main class="flex-1">
@@ -93,7 +104,7 @@
                             <input type="text"
                                    name="nama_pengaju"
                                    value="{{ old('nama_pengaju') }}"
-                                   class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400"
+                                   class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lintasarta-navy focus:border-lintasarta-navy"
                                    placeholder="Nama lengkap peserta magang">
                         </div>
 
@@ -105,7 +116,7 @@
                             <input type="email"
                                    name="email_pengaju"
                                    value="{{ old('email_pengaju') }}"
-                                   class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400"
+                                   class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lintasarta-navy focus:border-lintasarta-navy"
                                    placeholder="Alamat email aktif">
                         </div>
 
@@ -117,7 +128,7 @@
                             <input type="text"
                                 name="no_wa"
                                 value="{{ old('no_wa') }}"
-                                class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400"
+                                class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lintasarta-navy focus:border-lintasarta-navy"
                                 placeholder="Contoh: 08xxxxxxxxxx atau +62xxxxxxxxxx">
                             <p class="text-xs text-gray-500 mt-1">
                                 Format yang diterima: 08…, 62…, atau +62…
@@ -130,7 +141,7 @@
                                 Tipe Pengajuan <span class="text-red-500">*</span>
                             </label>
                             <select name="tipe"
-                                    class="w-full border rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400">
+                                    class="w-full border rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-lintasarta-navy focus:border-lintasarta-navy">
                                 <option value="">Pilih tipe pengajuan</option>
                                 <option value="sekolah" {{ old('tipe') === 'sekolah' ? 'selected' : '' }}>Siswa Sekolah / PKL</option>
                                 <option value="universitas" {{ old('tipe') === 'universitas' ? 'selected' : '' }}>Mahasiswa Universitas</option>
@@ -146,7 +157,7 @@
                             <input type="text"
                                    name="instansi"
                                    value="{{ old('instansi') }}"
-                                   class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400"
+                                   class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lintasarta-navy focus:border-lintasarta-navy"
                                    placeholder="Nama sekolah / universitas / instansi (jika ada)">
                         </div>
 
@@ -159,7 +170,7 @@
                                 <input type="date"
                                        name="tanggal_mulai"
                                        value="{{ old('tanggal_mulai') }}"
-                                       class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400">
+                                       class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lintasarta-navy focus:border-lintasarta-navy">
                             </div>
                             <div>
                                 <label class="block text-xs font-medium text-gray-700 mb-1">
@@ -168,7 +179,7 @@
                                 <input type="date"
                                        name="tanggal_selesai"
                                        value="{{ old('tanggal_selesai') }}"
-                                       class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400">
+                                       class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lintasarta-navy focus:border-lintasarta-navy">
                             </div>
                         </div>
 
@@ -191,7 +202,7 @@
                             <input id="persetujuan"
                                    type="checkbox"
                                    required
-                                   class="mt-1 border-gray-300 rounded text-indigo-600 focus:ring-indigo-500">
+                                   class="mt-1 border-gray-300 rounded text-lintasarta-blue focus:ring-lintasarta-blue">
                             <label for="persetujuan" class="text-xs text-gray-600">
                                 Saya menyatakan bahwa data yang diisi sudah benar dan bersedia mengikuti ketentuan magang yang berlaku di kantor.
                             </label>
@@ -199,7 +210,7 @@
 
                         <div class="pt-4">
                             <button type="submit"
-                                    class="inline-flex items-center px-4 py-2.5 rounded-lg text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition">
+                                    class="inline-flex items-center px-4 py-2.5 rounded-lg text-sm font-semibold bg-lintasarta-blue text-white hover:bg-lintasarta-navy transition">
                                 Kirim Pengajuan
                             </button>
                         </div>

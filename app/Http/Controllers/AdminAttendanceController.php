@@ -17,7 +17,6 @@ class AdminAttendanceController extends Controller
         ->where('tanggal', $tanggal)
         ->orderBy('jam_masuk', 'asc');
 
-        // ✅ status baru: standby_kantor
         $allowedStatus = ['standby_kantor', 'izin', 'turun_lapangan', 'checkout']; // checkout opsional
         if ($status && in_array($status, $allowedStatus, true)) {
             $query->where('status', $status);
@@ -103,7 +102,6 @@ class AdminAttendanceController extends Controller
         return response()->streamDownload($callback, $fileName, $headers);
     }
 
-    // ✅ Detail aktivitas per absensi (butuh route)
     public function aktivitas(Attendance $attendance)
     {
         $attendance->load(['user', 'workLogs' => fn($q) => $q->orderBy('created_at', 'desc')]);

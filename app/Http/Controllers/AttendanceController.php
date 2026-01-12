@@ -42,7 +42,6 @@ class AttendanceController extends Controller
         return view('peserta.dashboard', compact('user', 'todayAttendance', 'history'));
     }
 
-    // ✅ Check-in => standby_kantor
     public function checkIn()
     {
         $error = $this->cekPeriodeMagang();
@@ -72,7 +71,6 @@ class AttendanceController extends Controller
         return back()->with('success', 'Check-in berhasil. Status Anda sekarang: standby kantor.');
     }
 
-    // ✅ Turun lapangan: standby_kantor -> turun_lapangan + buat work log
     public function turunLapangan(Request $request)
     {
         $error = $this->cekPeriodeMagang();
@@ -98,10 +96,9 @@ class AttendanceController extends Controller
         }
 
         $attendance->status = 'turun_lapangan';
-        $attendance->keterangan = $request->keterangan; // lokasi/kegiatan (sementara)
+        $attendance->keterangan = $request->keterangan;
         $attendance->save();
 
-        // ✅ SIMPAN RIWAYAT TURUN LAPANGAN KE WORK LOG (mulai)
         WorkLog::create([
             'user_id'       => $user->id,
             'attendance_id' => $attendance->id,
@@ -113,7 +110,6 @@ class AttendanceController extends Controller
         return back()->with('success', 'Status turun lapangan berhasil dicatat.');
     }
 
-    // ✅ Kembali ke kantor: turun_lapangan -> standby_kantor + tutup work log + hapus keterangan
     public function kembaliKantor()
     {
         $error = $this->cekPeriodeMagang();
@@ -130,7 +126,6 @@ class AttendanceController extends Controller
         if ($attendance->status === 'checkout' || $attendance->jam_keluar) return back()->with('error', 'Anda sudah melakukan check-out hari ini.');
         if ($attendance->status !== 'turun_lapangan') return back()->with('error', 'Anda tidak sedang berstatus turun lapangan.');
 
-        // ✅ TUTUP LOG TURUN LAPANGAN TERAKHIR (kalau ada yang belum selesai)
         $openLapanganLog = WorkLog::where('attendance_id', $attendance->id)
             ->whereNull('jam_selesai')
             ->where('aktivitas', 'like', 'Turun lapangan:%')
@@ -143,7 +138,6 @@ class AttendanceController extends Controller
             ]);
         }
 
-        // ✅ BALIK KANTOR: reset keterangan jadi null (UI tampil "-")
         $attendance->status = 'standby_kantor';
         $attendance->keterangan = null;
         $attendance->save();
@@ -151,7 +145,6 @@ class AttendanceController extends Controller
         return back()->with('success', 'Berhasil kembali ke kantor. Status Anda sekarang: standby kantor.');
     }
 
-    // ✅ Checkout: boleh dari standby_kantor atau turun_lapangan
     public function checkOut()
     {
         $error = $this->cekPeriodeMagang();
@@ -179,7 +172,6 @@ class AttendanceController extends Controller
         return back()->with('success', 'Check-out berhasil dicatat.');
     }
 
-    // ✅ Izin
     public function izin(Request $request)
     {
         $error = $this->cekPeriodeMagang();

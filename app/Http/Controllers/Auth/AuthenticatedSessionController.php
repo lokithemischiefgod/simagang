@@ -32,17 +32,14 @@ public function store(LoginRequest $request): RedirectResponse
     $user = $request->user();
     $role = strtolower(trim((string) $user->role));
 
-    // admin & superadmin → ke halaman admin pengajuan
     if (in_array($role, ['admin', 'superadmin'])) {
         return redirect()->route('admin.pengajuan.index');
     }
 
-    // peserta → ke dashboard peserta
     if ($role === 'peserta') {
         return redirect()->route('peserta.dashboard');
     }
 
-    // fallback kalau role aneh / belum di-set
     return redirect('/');
 }
 

@@ -12,7 +12,6 @@ class ForceChangePassword
     {
         if (auth()->check() && auth()->user()->must_change_password) {
 
-            // Izinkan halaman profile, endpoint update password, dan logout
             if (
                 $request->is('profile') ||
                 $request->is('password') ||

@@ -19,7 +19,6 @@ class AdminMiddleware
 
     $role = strtolower(trim((string) auth()->user()->role));
 
-    // admin & superadmin boleh masuk
     if (!in_array($role, ['admin', 'superadmin'])) {
         abort(403, 'Anda tidak memiliki akses ke halaman ini.');
     }

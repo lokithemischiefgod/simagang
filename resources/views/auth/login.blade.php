@@ -48,13 +48,13 @@
                         <label for="remember_me" class="inline-flex items-center">
                             <input id="remember_me"
                                    type="checkbox"
-                                   class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
+                                   class="rounded border-gray-300 text-lintasarta-blue shadow-sm focus:ring-lintasarta-blue"
                                    name="remember">
                             <span class="ml-2 text-xs text-gray-600">{{ __('Remember me') }}</span>
                         </label>
 
                         @if (Route::has('password.request'))
-                            <a class="text-xs text-indigo-600 hover:text-indigo-800"
+                            <a class="text-xs text-lintasarta-blue hover:text-lintasarta-navy"
                                href="{{ route('password.request') }}">
                                 {{ __('Forgot your password?') }}
                             </a>

@@ -42,13 +42,13 @@
                 <div>
                     <label class="block text-xs font-medium text-gray-700 mb-1">Tanggal</label>
                     <input type="date" name="tanggal" value="{{ $tanggal }}"
-                           class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400">
+                           class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lintasarta-navy focus:border-lintasarta-navy">
                 </div>
 
                 <div>
                     <label class="block text-xs font-medium text-gray-700 mb-1">Status</label>
                     <select name="status"
-                            class="w-full border rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400">
+                            class="w-full border rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-lintasarta-navy focus:border-lintasarta-navy">
                         <option value="">-- Semua --</option>
                         <option value="standby_kantor" {{ $status === 'standby_kantor' ? 'selected' : '' }}>Standby Kantor</option>
                         <option value="izin" {{ $status === 'izin' ? 'selected' : '' }}>Izin</option>
@@ -61,12 +61,12 @@
                 <div>
                     <label class="block text-xs font-medium text-gray-700 mb-1">Cari Peserta (Nama / Email)</label>
                     <input type="text" name="q" value="{{ $q }}" placeholder="Nama atau email"
-                           class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400">
+                           class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lintasarta-navy focus:border-lintasarta-navy">
                 </div>
 
                 <div class="flex gap-2">
                     <button type="submit"
-                            class="inline-flex items-center justify-center px-4 py-2.5 rounded-lg text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition w-full">
+                            class="inline-flex items-center justify-center px-4 py-2.5 rounded-lg text-sm font-semibold bg-lintasarta-blue text-white hover:bg-lintasarta-navy transition w-full">
                         Terapkan Filter
                     </button>
                 </div>
@@ -154,7 +154,7 @@
 
                                     <td class="px-3 py-2 text-xs">
                                         <a href="{{ route('admin.absensi.aktivitas', $row->id) }}"
-                                        class="text-indigo-600 hover:underline font-semibold">
+                                        class="text-lintasarta-blue hover:underline font-semibold">
                                             Detail
                                         </a>
                                     </td>

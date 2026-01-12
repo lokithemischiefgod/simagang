@@ -14,7 +14,7 @@
             <label class="block text-xs text-gray-600 mb-1">Tanggal</label>
             <input type="date" name="tanggal" value="{{ $tanggal }}" class="border rounded-lg px-3 py-2 text-sm">
         </div>
-        <button class="px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold">
+        <button class="px-4 py-2 rounded-lg bg-lintasarta-blue text-white text-sm font-semibold">
             Tampilkan
         </button>
     </form>

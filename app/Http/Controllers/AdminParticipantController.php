@@ -6,11 +6,10 @@ use App\Models\User;
 use App\Models\Attendance;
 use App\Models\InternshipRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AdminParticipantController extends Controller
 {
-    // Daftar semua peserta magang (role = peserta)
-    // Daftar semua peserta magang (role = peserta)
     public function index(Request $request)
     {
         $q = $request->input('q', '');
@@ -28,19 +27,14 @@ class AdminParticipantController extends Controller
 
         $peserta = $query->orderBy('name', 'asc')->get();
 
-        // Ambil data pengajuan approved untuk periode magang, via email
         $pengajuanApproved = InternshipRequest::where('status', 'approved')->get();
 
-        // Key by email
         $pengajuanPerEmail = $pengajuanApproved->keyBy('email_pengaju');
 
-        // ✅ Filter aktif / tidak aktif berbasis tanggal_selesai
         if ($statusFilter !== 'all') {
             $peserta = $peserta->filter(function ($p) use ($pengajuanPerEmail, $statusFilter, $today) {
                 $req = $pengajuanPerEmail[$p->email] ?? null;
 
-                // kalau tidak ada pengajuan approved, anggap "tidak bisa ditentukan"
-                // biar aman: masukkan ke "active" saja? atau exclude? -> aku exclude dari active/inactive
                 if (!$req || !$req->tanggal_selesai) {
                     return false;
                 }
@@ -57,21 +51,16 @@ class AdminParticipantController extends Controller
         return view('admin.peserta.index', compact('peserta', 'pengajuanPerEmail', 'q', 'statusFilter'));
     }
 
-
-    // Detail satu peserta + periode + riwayat absensi
     public function show($id)
     {
         $user = User::where('role', 'peserta')
             ->where('id', $id)
             ->firstOrFail();
 
-
-        // Cari pengajuan yang disetujui berdasarkan email peserta
         $pengajuan = InternshipRequest::where('email_pengaju', $user->email)
             ->where('status', 'approved')
             ->first();
 
-        // Riwayat absensi peserta
         $absensi = Attendance::where('user_id', $user->id)
             ->orderBy('tanggal', 'desc')
             ->get();
@@ -99,7 +88,6 @@ class AdminParticipantController extends Controller
     $callback = function () use ($user, $absensi) {
         $handle = fopen('php://output', 'w');
 
-        // Header kolom
         fputcsv($handle, [
             'Nama Peserta',
             'Email',
@@ -135,60 +123,26 @@ public function bulkDestroy(Request $request)
         'ids.*' => 'integer',
     ]);
 
-    $today = now()->toDateString();
-
-    // Ambil peserta yang dipilih (pastikan role peserta)
     $users = User::where('role', 'peserta')
         ->whereIn('id', $request->ids)
         ->get();
 
     if ($users->isEmpty()) {
-        return back()->with('error', 'Tidak ada peserta yang valid untuk dihapus.');
+        return back()->with('error', 'Tidak ada peserta yang valid.');
     }
 
-    // Ambil pengajuan approved untuk email-email tersebut
-    $emails = $users->pluck('email')->values()->all();
+    foreach ($users as $user) {
 
-    $reqByEmail = InternshipRequest::where('status', 'approved')
-        ->whereIn('email_pengaju', $emails)
-        ->get()
-        ->keyBy('email_pengaju');
+        Attendance::where('user_id', $user->id)->delete();
 
-    // Hanya boleh hapus yang benar-benar tidak aktif (tanggal_selesai < hari ini)
-    $deletableIds = [];
-    $skipped = 0;
+        \App\Models\WorkLog::where('user_id', $user->id)->delete();
 
-    foreach ($users as $u) {
-        $req = $reqByEmail[$u->email] ?? null;
+        InternshipRequest::where('email_pengaju', $user->email)->delete();
 
-        if (!$req || !$req->tanggal_selesai) {
-            $skipped++;
-            continue;
-        }
-
-        $isInactive = $req->tanggal_selesai < $today;
-        if (!$isInactive) {
-            $skipped++;
-            continue;
-        }
-
-        $deletableIds[] = $u->id;
+        $user->delete();
     }
 
-    if (empty($deletableIds)) {
-        return back()->with('error', 'Tidak ada peserta “Tidak Aktif” yang bisa dihapus dari pilihan tersebut.');
-    }
-
-    // Hapus (cascade akan ikut hapus attendance/work_logs jika FK kamu benar)
-    $deletedCount = User::whereIn('id', $deletableIds)->delete();
-
-    $msg = "Berhasil menghapus {$deletedCount} peserta tidak aktif.";
-    if ($skipped > 0) {
-        $msg .= " ({$skipped} peserta dilewati karena masih aktif / tidak punya periode selesai).";
-    }
-
-    return back()->with('success', $msg);
+    return back()->with('success', 'Peserta terpilih berhasil dihapus beserta seluruh data terkait.');
 }
-
 
 }

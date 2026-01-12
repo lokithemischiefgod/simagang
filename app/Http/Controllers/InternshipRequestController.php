@@ -137,6 +137,22 @@ class InternshipRequestController extends Controller
         return back()->with('success', 'Status pengajuan berhasil diupdate dan email notifikasi telah dikirim.');
     }
 
+    public function destroy($id)
+{
+    $item = InternshipRequest::findOrFail($id);
+
+    if ($item->status === 'approved') {
+        return back()->with('error', 'Pengajuan approved harus dihapus melalui akun peserta.');
+    }
+
+    if ($item->surat_pengantar) {
+        \Storage::disk('public')->delete($item->surat_pengantar);
+    }
+
+    $item->delete();
+
+    return back()->with('success', 'Pengajuan berhasil dihapus.');
+}
 
 
 }

@@ -64,6 +64,9 @@ Route::middleware(['auth', 'force.password', 'admin'])->group(function() {
     Route::delete('/admin/peserta/bulk-delete', [AdminParticipantController::class, 'bulkDestroy'])
         ->name('admin.peserta.bulkDestroy');
 
+    Route::delete('/admin/pengajuan/{id}', [InternshipRequestController::class, 'destroy'])
+        ->name('admin.pengajuan.destroy');
+
 });
 
 Route::middleware(['auth', 'force.password', 'peserta'])->group(function () {
@@ -93,6 +96,10 @@ Route::middleware(['auth', 'force.password', 'superadmin'])->group(function () {
 
     Route::delete('/superadmin/admins/{id}', [SuperadminUserController::class, 'destroy'])
         ->name('superadmin.admins.destroy');
+    
+    Route::patch('/superadmin/admins/{id}/promote',[SuperadminUserController::class, 'promoteToSuperadmin'])
+        ->name('superadmin.admins.promote');
+
 });
 
 
