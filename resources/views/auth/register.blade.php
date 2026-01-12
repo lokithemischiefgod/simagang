@@ -77,7 +77,7 @@
 
             <div class="text-center text-xs text-gray-500">
                 Sudah punya akun?
-                <a href="{{ route('login') }}" class="text-indigo-600 hover:text-indigo-800">
+                <a href="{{ route('login') }}" class="text-lintasarta-blue hover:text-lintasarta-navy">
                     Login di sini
                 </a>
             </div>

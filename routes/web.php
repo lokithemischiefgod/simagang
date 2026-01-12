@@ -64,6 +64,9 @@ Route::middleware(['auth', 'force.password', 'admin'])->group(function() {
     Route::delete('/admin/peserta/bulk-delete', [AdminParticipantController::class, 'bulkDestroy'])
         ->name('admin.peserta.bulkDestroy');
 
+    Route::delete('/admin/pengajuan/{id}', [InternshipRequestController::class, 'destroy'])
+        ->name('admin.pengajuan.destroy');
+
 });
 
 Route::middleware(['auth', 'force.password', 'peserta'])->group(function () {

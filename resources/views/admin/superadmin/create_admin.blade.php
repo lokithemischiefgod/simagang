@@ -44,7 +44,7 @@
                     <input type="text"
                            name="name"
                            value="{{ old('name') }}"
-                           class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400">
+                           class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lintasarta-navy focus:border-lintasarta-navy">
                 </div>
 
                 <div>
@@ -54,7 +54,7 @@
                     <input type="email"
                            name="email"
                            value="{{ old('email') }}"
-                           class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400">
+                           class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lintasarta-navy focus:border-lintasarta-navy">
                 </div>
 
                 <div>
@@ -63,7 +63,7 @@
                     </label>
                     <input type="password"
                            name="password"
-                           class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400">
+                           class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lintasarta-navy focus:border-lintasarta-navy">
                     <p class="text-xs text-gray-500 mt-1">
                         Sampaikan password ini ke admin terkait dan anjurkan untuk segera menggantinya.
                     </p>
@@ -71,7 +71,7 @@
 
                 <div class="pt-2">
                     <button type="submit"
-                            class="inline-flex items-center px-4 py-2.5 rounded-lg text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition">
+                            class="inline-flex items-center px-4 py-2.5 rounded-lg text-sm font-semibold bg-lintasarta-blue text-white hover:bg-lintasarta-navy transition">
                         Simpan Admin
                     </button>
                 </div>

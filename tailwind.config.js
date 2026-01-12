@@ -17,6 +17,14 @@ export default {
       fontFamily: {
         sans: ['Figtree', ...defaultTheme.fontFamily.sans],
       },
+      colors: {
+        lintasarta: {
+          navy: '#0B2C4D',
+          blue: '#005BAC',
+          red: '#E11D48',
+          soft: '#F8FAFC',
+        }
+      }
     },
   },
   plugins: [forms],

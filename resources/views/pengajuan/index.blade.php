@@ -115,42 +115,72 @@
                                         {{ $item->alasan_penolakan ?? '-' }}
                                     </td>
                                     <td class="px-3 py-2 text-xs text-gray-700">
-                                        @if ($item->status === 'pending')
-                                            <div class="flex flex-col gap-2">
+                                        <div class="flex flex-col gap-2">
 
-                                                {{-- Form Approve --}}
+                                            {{-- AKSI PENDING --}}
+                                            @if ($item->status === 'pending')
+
+                                                {{-- Approve --}}
                                                 <form action="{{ route('admin.pengajuan.updateStatus', $item->id) }}"
-                                                      method="POST"
-                                                      class="inline">
+                                                    method="POST">
                                                     @csrf
                                                     <input type="hidden" name="status" value="approved">
                                                     <button type="submit"
-                                                            class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-700 transition">
+                                                            class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-700">
                                                         Setujui
                                                     </button>
                                                 </form>
 
-                                                {{-- Form Reject --}}
+                                                {{-- Reject --}}
                                                 <form action="{{ route('admin.pengajuan.updateStatus', $item->id) }}"
-                                                      method="POST"
-                                                      class="inline flex flex-col gap-1">
+                                                    method="POST"
+                                                    class="flex flex-col gap-1">
                                                     @csrf
                                                     <input type="hidden" name="status" value="rejected">
                                                     <input
                                                         type="text"
                                                         name="alasan_penolakan"
                                                         placeholder="Alasan..."
-                                                        class="border border-gray-300 rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-red-400 focus:border-red-400"
-                                                    >
+                                                        class="border rounded px-2 py-1 text-xs">
                                                     <button type="submit"
-                                                            class="inline-flex items-center justify-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-600 text-white hover:bg-red-700 transition">
+                                                            class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-600 text-white hover:bg-red-700">
                                                         Tolak
                                                     </button>
                                                 </form>
-                                            </div>
-                                        @else
-                                            <span class="italic text-gray-500">Status final</span>
-                                        @endif
+
+                                                {{-- Hapus --}}
+                                                <form action="{{ route('admin.pengajuan.destroy', $item->id) }}"
+                                                    method="POST"
+                                                    onsubmit="return confirm('Hapus pengajuan ini?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit"
+                                                            class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-600 text-white hover:bg-gray-700">
+                                                        Hapus
+                                                    </button>
+                                                </form>
+
+                                            {{-- AKSI REJECTED --}}
+                                            @elseif ($item->status === 'rejected')
+
+                                                <form action="{{ route('admin.pengajuan.destroy', $item->id) }}"
+                                                    method="POST"
+                                                    onsubmit="return confirm('Hapus pengajuan ditolak ini?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit"
+                                                            class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-600 text-white hover:bg-gray-700">
+                                                        Hapus
+                                                    </button>
+                                                </form>
+
+                                            {{-- APPROVED --}}
+                                            @else
+                                                <span class="italic text-gray-500">
+                                                    Final.
+                                                </span>
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach

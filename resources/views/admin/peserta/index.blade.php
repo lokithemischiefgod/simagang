@@ -36,7 +36,7 @@
                         Cari Peserta (Nama / Email)
                     </label>
                     <input type="text" name="q" value="{{ $q }}" placeholder="Nama atau email"
-                        class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400">
+                        class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lintasarta-navy focus:border-lintasarta-navy">
                 </div>
 
                 <div>
@@ -44,7 +44,7 @@
                         Status Peserta
                     </label>
                     <select name="status"
-                            class="w-full border rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400">
+                            class="w-full border rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-lintasarta-navy focus:border-lintasarta-navy">
                         <option value="all" {{ ($statusFilter ?? 'all') === 'all' ? 'selected' : '' }}>Semua</option>
                         <option value="active" {{ ($statusFilter ?? 'all') === 'active' ? 'selected' : '' }}>Aktif</option>
                         <option value="inactive" {{ ($statusFilter ?? 'all') === 'inactive' ? 'selected' : '' }}>Tidak Aktif</option>
@@ -53,7 +53,7 @@
 
                 <div>
                     <button type="submit"
-                            class="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-lg text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition">
+                            class="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-lg text-sm font-semibold bg-lintasarta-blue text-white hover:bg-lintasarta-navy transition">
                         Terapkan
                     </button>
                 </div>
@@ -80,7 +80,7 @@
 
                     <div class="flex items-center justify-between mb-3">
                         <div class="text-xs text-gray-500">
-                            Centang peserta <span class="font-semibold">Tidak Aktif</span> untuk dihapus.
+                            Centang peserta untuk dihapus (akun, absensi, dan pengajuan akan ikut terhapus).
                         </div>
 
                         <button type="submit"
@@ -118,16 +118,10 @@
 
                                     <tr class="border-t border-gray-200">
                                         <td class="px-3 py-2 text-xs">
-                                            @if($isInactive === true)
-                                                <input type="checkbox"
-                                                    name="ids[]"
-                                                    value="{{ $p->id }}"
-                                                    class="rowCheck rounded border-gray-300">
-                                            @else
-                                                <input type="checkbox"
-                                                    class="rounded border-gray-200 opacity-40"
-                                                    disabled>
-                                            @endif
+                                        <input type="checkbox"
+                                        name="ids[]"
+                                        value="{{ $p->id }}"
+                                        class="rowCheck rounded border-gray-300">
                                         </td>
 
                                         <td class="px-3 py-2 text-sm text-gray-900">

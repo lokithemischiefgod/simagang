@@ -103,7 +103,6 @@ class AdminAttendanceController extends Controller
         return response()->streamDownload($callback, $fileName, $headers);
     }
 
-    // ✅ Detail aktivitas per absensi (butuh route)
     public function aktivitas(Attendance $attendance)
     {
         $attendance->load(['user', 'workLogs' => fn($q) => $q->orderBy('created_at', 'desc')]);

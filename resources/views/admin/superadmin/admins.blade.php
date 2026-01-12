@@ -15,7 +15,7 @@
             </div>
             <div>
                 <a href="{{ route('superadmin.admins.create') }}"
-                   class="inline-flex items-center px-4 py-2.5 rounded-lg text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition">
+                   class="inline-flex items-center px-4 py-2.5 rounded-lg text-sm font-semibold bg-lintasarta-blue text-white hover:bg-lintasarta-navy transition">
                     + Tambah Admin Baru
                 </a>
             </div>

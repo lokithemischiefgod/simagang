@@ -57,7 +57,7 @@
 
         <div class="flex items-center justify-end pt-2">
             <button type="submit"
-                    class="px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold">
+                    class="px-4 py-2 rounded-lg bg-lintasarta-blue text-white text-sm font-semibold">
                 Simpan Password
             </button>
         </div>

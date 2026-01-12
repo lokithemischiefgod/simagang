@@ -6,13 +6,19 @@
     <title>SIMAGANG</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-gray-50 text-gray-900">
+<body class="bg-white-50 text-gray-900">
     <div class="min-h-screen flex flex-col">
 
         {{-- Main --}}
         <main class="flex-1 flex items-center">
             <div class="max-w-5xl mx-auto px-4 w-full">
                 <div class="max-w-2xl space-y-6">
+
+                    <div class="flex mb-6">
+                        <img src="{{ asset('images/lintasarta.png') }}"
+                            alt="Lintasarta"
+                            class="h-20">
+                    </div>
 
                     {{-- Judul utama --}}
                     <h1 class="text-3xl md:text-4xl font-extrabold leading-tight">
@@ -31,7 +37,7 @@
                     {{-- Aksi utama --}}
                     <div class="flex flex-wrap gap-3 pt-2">
                         <a href="{{ url('/pengajuan') }}"
-                           class="inline-flex items-center px-4 py-2.5 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition">
+                           class="inline-flex items-center px-4 py-2.5 rounded-lg bg-lintasarta-blue text-white font-semibold hover:bg-lintasarta-navy transition">
                             Ajukan Magang
                         </a>
 
