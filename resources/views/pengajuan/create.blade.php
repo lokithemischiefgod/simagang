@@ -14,7 +14,7 @@
             <div class="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
                 <div>
                     <h1 class="text-lg font-semibold text-gray-900">
-                        SIMAGANG – Pengajuan Magang / PKL
+                        SIMAGANG - Pengajuan Magang / PKL
                     </h1>
                     <p class="text-xs text-gray-500">
                         Formulir pengajuan untuk siswa, mahasiswa, maupun magang mandiri.
@@ -26,13 +26,6 @@
                         ← Landing Page
                     </a>
 
-                    {{-- opsional: login --}}
-                    {{-- 
-                    <a href="{{ route('login') }}"
-                    class="text-sm text-indigo-600 hover:text-indigo-800">
-                        Login
-                    </a>
-                    --}}
                 </div>
 
             </div>
@@ -78,6 +71,7 @@
                     </p>
                     <ul class="text-xs text-gray-500 list-disc list-inside">
                         <li>Pastikan email yang digunakan aktif.</li>
+                        <li>Pastikan Nomor WhatsApp yang digunakan aktif.</li>
                         <li>Periode magang akan menjadi dasar pembatasan pengisian absensi.</li>
                         <li>Surat pengantar dapat berupa PDF resmi dari sekolah / kampus / instansi.</li>
                     </ul>
@@ -126,7 +120,7 @@
                                 class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400"
                                 placeholder="Contoh: 08xxxxxxxxxx atau +62xxxxxxxxxx">
                             <p class="text-xs text-gray-500 mt-1">
-                                Wajib nomor WhatsApp aktif. Format yang diterima: 08…, 62…, atau +62…
+                                Format yang diterima: 08…, 62…, atau +62…
                             </p>
                         </div>
 
@@ -137,7 +131,7 @@
                             </label>
                             <select name="tipe"
                                     class="w-full border rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400">
-                                <option value="">-- Pilih tipe pengajuan --</option>
+                                <option value="">Pilih tipe pengajuan</option>
                                 <option value="sekolah" {{ old('tipe') === 'sekolah' ? 'selected' : '' }}>Siswa Sekolah / PKL</option>
                                 <option value="universitas" {{ old('tipe') === 'universitas' ? 'selected' : '' }}>Mahasiswa Universitas</option>
                                 <option value="mandiri" {{ old('tipe') === 'mandiri' ? 'selected' : '' }}>Magang Mandiri</option>
@@ -181,7 +175,7 @@
                         {{-- Surat Pengantar --}}
                         <div>
                             <label class="block text-xs font-medium text-gray-700 mb-1">
-                                Surat Pengantar (PDF) {{-- kalau di backend wajib, bisa tambahkan * --}}
+                                Surat Pengantar (PDF)
                             </label>
                             <input type="file"
                                    name="surat_pengantar"
@@ -217,7 +211,7 @@
         </main>
 
         <footer class="py-4 text-center text-xs text-gray-400">
-            &copy; {{ date('Y') }} SIMAGANG – Sistem Daftar Hadir Magang.
+            &copy; {{ date('Y') }} SIMAGANG - Sistem Daftar Hadir Magang.
         </footer>
     </div>
 

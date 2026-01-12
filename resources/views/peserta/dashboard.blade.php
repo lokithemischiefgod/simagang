@@ -3,23 +3,29 @@
         <div class="space-y-6">
 
             {{-- Header --}}
-            <div class="bg-white shadow rounded-xl p-6 flex items-center justify-between">
+            <div class="bg-white shadow rounded-xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                {{-- Nama & Email --}}
                 <div>
-                    <h1 class="text-2xl font-semibold text-gray-900">
+                    <h1 class="text-xl md:text-2xl font-semibold text-gray-900">
                         Dashboard Peserta Magang
                     </h1>
                     <p class="text-gray-600 text-sm mt-1">
-                        Halo, <span class="font-medium">{{ $user->name }}</span> ({{ $user->email }})
+                        Halo, <span class="font-medium">{{ $user->name }}</span> <span class="hidden sm:inline">({{ $user->email }})</span>
                     </p>
                 </div>
-                <div class="text-right text-xs text-gray-500">
-                    Tanggal hari ini<br>
-                    <span class="font-semibold text-gray-700">{{ now()->toDateString() }}</span>
+
+                {{-- Tanggal & Tombol --}}
+                <div class="flex flex-row items-center justify-between md:justify-end md:gap-6 border-t md:border-t-0 pt-4 md:pt-0">
+                    <div class="text-left md:text-right text-xs text-gray-500">
+                        <span class="block">Tanggal hari ini</span>
+                        <span class="font-semibold text-gray-700">{{ now()->toDateString() }}</span>
+                    </div>
+                    
+                    <a href="{{ route('peserta.worklog.index') }}"
+                    class="inline-flex items-center px-4 py-2 rounded-lg border border-gray-300 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
+                        Riwayat Aktivitas
+                    </a>
                 </div>
-                <a href="{{ route('peserta.worklog.index') }}"
-                class="inline-flex items-center px-4 py-2 rounded-lg border border-gray-300 text-sm font-semibold text-gray-700 hover:bg-gray-50">
-                Riwayat Aktivitas
-                </a>
             </div>
 
             {{-- Notifikasi --}}

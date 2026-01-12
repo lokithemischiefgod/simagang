@@ -2,7 +2,7 @@
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex h-16 items-center">
-            <!-- LEFT: Logo + Links -->
+            <!-- Logo + Links -->
             <div class="flex items-center">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
@@ -13,10 +13,20 @@
                                 ? route('superadmin.admins.index')
                                 : route('admin.pengajuan.index')))
                         : route('pengajuan.create') }}"
-                       class="text-lg font-extrabold tracking-tight text-gray-900">
-                        SIMAGANG
+                    class="flex items-center gap-3">
+
+                        <!-- Logo Lintasarta -->
+                        <img src="{{ asset('images/lintasarta.png') }}"
+                            alt="Lintasarta"
+                            class="h-8 w-auto object-contain">
+
+                        <!-- Nama Sistem -->
+                        <span class="text-sm font-semibold text-gray-700 tracking-wide">
+                            SIMAGANG
+                        </span>
+
                     </a>
-                </div>
+                </div>  
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
@@ -53,7 +63,7 @@
                 </div>
             </div>
 
-            <!-- RIGHT: Settings Dropdown (push to far right) -->
+            <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center ml-auto">
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">

@@ -11,30 +11,29 @@ class PengajuanStatusMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $pengajuan;
+    public InternshipRequest $item;
+    public ?string $plainPassword;
 
-    /**
-     * Create a new message instance.
-     */
-    public function __construct(InternshipRequest $pengajuan)
+    public function __construct(InternshipRequest $item, ?string $plainPassword = null)
     {
-        $this->pengajuan = $pengajuan;
+        $this->item = $item;
+        $this->plainPassword = $plainPassword;
     }
 
-    /**
-     * Build the message.
-     */
     public function build()
     {
-        $subject = 'Status Pengajuan Magang / PKL Anda';
+        $subject = match ($this->item->status) {
+            'approved' => 'Pengajuan Magang Disetujui - Akun SIMAGANG Anda',
+            'rejected' => 'Pengajuan Magang Ditolak - SIMAGANG',
+            default    => 'Update Status Pengajuan - SIMAGANG',
+        };
 
-        if ($this->pengajuan->status === 'approved') {
-            $subject = 'Pengajuan Magang / PKL Anda DITERIMA';
-        } elseif ($this->pengajuan->status === 'rejected') {
-            $subject = 'Pengajuan Magang / PKL Anda DITOLAK';
-        }
-
-        return $this->subject($subject)
-                    ->markdown('emails.pengajuan_status');
+        return $this
+            ->subject($subject)
+            ->markdown('emails.pengajuan_status', [
+                'item' => $this->item,
+                'plainPassword' => $this->plainPassword,
+            ]);
     }
+
 }

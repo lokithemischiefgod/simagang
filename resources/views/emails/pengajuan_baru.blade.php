@@ -21,5 +21,5 @@ Silakan melakukan review dan menentukan status pengajuan (setujui / tolak) melal
 
 Terima kasih,
 
-**Sistem Magang Kantor**
+**SIMAGANG**
 @endcomponent

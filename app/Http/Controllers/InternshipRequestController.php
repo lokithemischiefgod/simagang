@@ -8,16 +8,16 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\PengajuanStatusMail;
 use App\Models\User;
 use App\Mail\PengajuanBaruMail;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
 
 class InternshipRequestController extends Controller
 {
-    // Tampilkan form pengajuan untuk umum
     public function create()
     {
         return view('pengajuan.create');
     }
 
-    // Simpan pengajuan
     public function store(Request $request)
     {
         $request->validate([
@@ -33,17 +33,13 @@ class InternshipRequestController extends Controller
             'no_wa.regex' => 'Nomor WhatsApp harus diawali 08, 62, atau +62 dan hanya berisi angka.',
         ]);
 
-        // ✅ Normalisasi nomor WA: simpan sebagai 62xxxxxxxxxx
         $raw = $request->input('no_wa');
-        $digits = preg_replace('/\D+/', '', $raw); // buang selain angka
+        $digits = preg_replace('/\D+/', '', $raw);
 
-        // 08xxxx -> 62xxxx
         if (str_starts_with($digits, '08')) {
             $digits = '62' . substr($digits, 1);
         }
 
-        // kalau user input +62xxxx, preg_replace sudah jadi 62xxxx (aman)
-        // pastikan tetap 62...
         if (!str_starts_with($digits, '62')) {
             return back()
                 ->withErrors(['no_wa' => 'Nomor WhatsApp harus menggunakan format 08 / 62 / +62.'])
@@ -67,7 +63,6 @@ class InternshipRequestController extends Controller
             'status'          => 'pending',
         ]);
 
-        // ✅ KIRIM EMAIL NOTIFIKASI KE ADMIN & SUPERADMIN
         try {
             $admins = User::whereIn('role', ['admin', 'superadmin'])->get();
 
@@ -82,17 +77,13 @@ class InternshipRequestController extends Controller
     }
 
 
-
-    // ✅ TAMPILKAN DAFTAR PENGAJUAN (HALAMAN ADMIN)
     public function index()
     {
-        // ambil semua pengajuan, urutkan terbaru di atas
-        $items = InternshipRequest::orderBy('created_at', 'desc')->get();
+            $items = InternshipRequest::orderBy('created_at', 'desc')->get();
 
         return view('pengajuan.index', compact('items'));
     }
 
-    // ✅ UBAH STATUS PENGAJUAN (APPROVE / REJECT)
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
@@ -102,50 +93,50 @@ class InternshipRequestController extends Controller
 
         $item = InternshipRequest::findOrFail($id);
 
-        // Hanya boleh ubah kalau masih pending
         if ($item->status !== 'pending') {
             return back()->with('error', 'Status pengajuan sudah final dan tidak dapat diubah lagi.');
         }
 
-        $dataUpdate = [
+        $item->update([
             'status' => $request->status,
-        ];
+            'alasan_penolakan' => $request->status === 'rejected'
+                ? $request->alasan_penolakan
+                : null,
+        ]);
 
-        if ($request->status === 'rejected') {
-            $dataUpdate['alasan_penolakan'] = $request->alasan_penolakan;
-        } else {
-            $dataUpdate['alasan_penolakan'] = null;
-        }
+        $plainPassword = null;
 
-        // Update status & alasan di database
-        $item->update($dataUpdate);
-
-        // Jika status disetujui, buat akun peserta otomatis (seperti sebelumnya)
         if ($request->status === 'approved') {
 
-            $existingUser = \App\Models\User::where('email', $item->email_pengaju)->first();
+            $user = User::where('email', $item->email_pengaju)->first();
 
-            if (!$existingUser) {
-                \App\Models\User::create([
+            if (!$user) {
+                $plainPassword = Str::password(length: 12);
+
+                $user = User::create([
                     'name'                 => $item->nama_pengaju,
                     'email'                => $item->email_pengaju,
-                    'password'             => bcrypt('password123'),  // default password
+                    'password'             => Hash::make($plainPassword),
                     'role'                 => 'peserta',
-                    'must_change_password' => true,                   // kalau pakai mekanisme force change password
+                    'must_change_password' => true,
                 ]);
             }
         }
 
-        // ✅ Kirim email pemberitahuan ke pengaju
         try {
-            Mail::to($item->email_pengaju)->send(new PengajuanStatusMail($item));
-        } catch (\Exception $e) {
-            // Kalau gagal kirim email, sistem tetap jalan, tapi kita bisa info admin
-            // dd($e->getMessage()); // untuk debug kalau perlu
+            Mail::to($item->email_pengaju)
+                ->send(new PengajuanStatusMail($item, $plainPassword));
+        } catch (\Throwable $e) {
+            logger()->error('Gagal kirim email status pengajuan', [
+                'pengajuan_id' => $item->id,
+                'email' => $item->email_pengaju,
+                'error' => $e->getMessage(),
+            ]);
         }
 
-        return back()->with('success', 'Status pengajuan berhasil diupdate dan email notifikasi telah dikirim (jika konfigurasi email sudah benar).');
+        return back()->with('success', 'Status pengajuan berhasil diupdate dan email notifikasi telah dikirim.');
     }
+
 
 
 }

@@ -13,17 +13,11 @@ class PengajuanBaruMail extends Mailable
 
     public $pengajuan;
 
-    /**
-     * Create a new message instance.
-     */
     public function __construct(InternshipRequest $pengajuan)
     {
         $this->pengajuan = $pengajuan;
     }
 
-    /**
-     * Build the message.
-     */
     public function build()
     {
         return $this->subject('Pengajuan Magang / PKL Baru Diterima')
