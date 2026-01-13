@@ -49,7 +49,7 @@
                     <label class="block text-xs font-medium text-gray-700 mb-1">Status</label>
                     <select name="status"
                             class="w-full border rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-lintasarta-navy focus:border-lintasarta-navy">
-                        <option value="">-- Semua --</option>
+                        <option value="">Semua</option>
                         <option value="standby_kantor" {{ $status === 'standby_kantor' ? 'selected' : '' }}>Standby Kantor</option>
                         <option value="izin" {{ $status === 'izin' ? 'selected' : '' }}>Izin</option>
                         <option value="turun_lapangan" {{ $status === 'turun_lapangan' ? 'selected' : '' }}>Turun Lapangan</option>
