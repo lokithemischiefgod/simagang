@@ -85,7 +85,7 @@
                             </x-dropdown-link>
                         @else
                             <x-dropdown-link :href="route('profile.edit')">
-                                Akun
+                                Ganti Password
                             </x-dropdown-link>
                         @endif
 
