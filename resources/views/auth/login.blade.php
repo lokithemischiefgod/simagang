@@ -50,13 +50,13 @@
                                    type="checkbox"
                                    class="rounded border-gray-300 text-lintasarta-blue shadow-sm focus:ring-lintasarta-blue"
                                    name="remember">
-                            <span class="ml-2 text-xs text-gray-600">{{ __('Remember me') }}</span>
+                            <span class="ml-2 text-xs text-gray-600">{{ __('Ingat Saya') }}</span>
                         </label>
 
                         @if (Route::has('password.request'))
                             <a class="text-xs text-lintasarta-blue hover:text-lintasarta-navy"
                                href="{{ route('password.request') }}">
-                                {{ __('Forgot your password?') }}
+                                {{ __('Lupa Password?') }}
                             </a>
                         @endif
                     </div>
@@ -66,7 +66,7 @@
                             &larr; Kembali ke landing
                         </a>
 
-                        <x-primary-button class="ml-3">
+                        <x-primary-button class="inline-flex items-center px-4 py-2.5 rounded-lg bg-lintasarta-blue text-white font-semibold hover:bg-lintasarta-navy transition">
                             {{ __('Log in') }}
                         </x-primary-button>
                     </div>

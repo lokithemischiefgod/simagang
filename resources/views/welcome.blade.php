@@ -15,7 +15,7 @@
                 <div class="max-w-2xl space-y-6">
 
                     <div class="flex mb-6">
-                        <img src="{{ asset('images/lintasarta.png') }}"
+                        <img src="{{ asset('images/lintasarta_teks.png') }}"
                             alt="Lintasarta"
                             class="h-20">
                     </div>
@@ -42,7 +42,7 @@
                         </a>
 
                         <a href="{{ route('login') }}"
-                           class="inline-flex items-center px-4 py-2.5 rounded-lg border border-gray-300 text-gray-800 font-semibold hover:bg-white transition">
+                           class="inline-flex items-center px-4 py-2.5 rounded-lg border bg-lintasarta-soft border-gray-300 text-gray-800 font-semibold hover:bg-lintasarta-grey transition">
                             Login
                         </a>
                     </div>

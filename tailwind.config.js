@@ -23,6 +23,7 @@ export default {
           blue: '#005BAC',
           red: '#E11D48',
           soft: '#F8FAFC',
+          grey: '#a0a0a0'
         }
       }
     },
