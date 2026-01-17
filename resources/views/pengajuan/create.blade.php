@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Pengajuan Magang / PKL</title>
+    <title>SIMAGANG</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-gray-50">
@@ -222,7 +222,7 @@
         </main>
 
         <footer class="py-4 text-center text-xs text-gray-400">
-            &copy; {{ date('Y') }} SIMAGANG - Sistem Daftar Hadir Magang.
+            &copy; {{ date('Y') }} SIMAGANG
         </footer>
     </div>
 
