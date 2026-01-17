@@ -20,6 +20,5 @@ Telah masuk pengajuan magang/PKL baru dengan detail sebagai berikut:
 Silakan melakukan review dan menentukan status pengajuan (setujui / tolak) melalui sistem.
 
 Terima kasih,
-
 **SIMAGANG**
 @endcomponent
