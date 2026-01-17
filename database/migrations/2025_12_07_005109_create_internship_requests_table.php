@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('nama_pengaju');
             $table->string('email_pengaju');
             $table->enum('tipe', ['sekolah', 'universitas', 'mandiri']);
-            $table->string('instansi')->nullable();      // sekolah/univ kalau ada
-            $table->string('surat_pengantar')->nullable(); // path file pdf
+            $table->string('instansi')->nullable();
+            $table->string('surat_pengantar')->nullable();
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->text('alasan_penolakan')->nullable();
             $table->timestamps();
