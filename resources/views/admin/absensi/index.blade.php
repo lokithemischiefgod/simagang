@@ -121,7 +121,7 @@
                                         default => 'bg-gray-100 text-gray-800',
                                     };
 
-                                    $lastLog = $row->workLogs->first(); // karena controller limit(1)
+                                    $lastLog = $row->workLogs->first();
                                 @endphp
                                 <tr class="border-t border-gray-200">
                                     <td class="px-3 py-2 text-sm text-gray-900">

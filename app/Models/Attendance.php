@@ -16,7 +16,6 @@ class Attendance extends Model
         'keterangan',
     ];
 
-    // Relasi ke user (peserta)
     public function user()
     {
         return $this->belongsTo(\App\Models\User::class);

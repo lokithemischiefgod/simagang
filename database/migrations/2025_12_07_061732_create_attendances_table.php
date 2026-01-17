@@ -18,7 +18,7 @@ return new class extends Migration
             $table->enum('status', ['standby_kantor', 'izin', 'turun_lapangan', 'checkout']);
             $table->time('jam_masuk')->nullable();
             $table->time('jam_keluar')->nullable();
-            $table->text('keterangan')->nullable(); // alasan izin / lokasi lapangan
+            $table->text('keterangan')->nullable();
             $table->timestamps();
      });
     }

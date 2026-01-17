@@ -54,7 +54,7 @@ class InternshipRequestController extends Controller
         $pengajuan = InternshipRequest::create([
             'nama_pengaju'    => $request->nama_pengaju,
             'email_pengaju'   => $request->email_pengaju,
-            'no_wa'           => $digits, // ✅ WA tersimpan
+            'no_wa'           => $digits,
             'tipe'            => $request->tipe,
             'instansi'        => $request->instansi,
             'surat_pengantar' => $path,
