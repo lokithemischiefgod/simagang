@@ -67,6 +67,10 @@ Route::middleware(['auth', 'force.password', 'admin'])->group(function() {
     Route::delete('/admin/pengajuan/{id}', [InternshipRequestController::class, 'destroy'])
         ->name('admin.pengajuan.destroy');
 
+    Route::get('/admin/pengajuan/{id}/surat-pengantar', [InternshipRequestController::class, 'viewSurat'])
+        ->name('admin.pengajuan.surat');
+
+
 });
 
 Route::middleware(['auth', 'force.password', 'peserta'])->group(function () {

@@ -97,9 +97,9 @@
                                     </td>
                                     <td class="px-3 py-2 text-xs">
                                         @if ($item->surat_pengantar)
-                                            <a href="{{ asset('storage/' . $item->surat_pengantar) }}"
-                                               target="_blank"
-                                               class="text-blue-600 hover:underline">
+                                            <a href="{{ route('admin.pengajuan.surat', $item->id) }}"
+                                            target="_blank"
+                                            class="text-blue-600 hover:underline font-semibold">
                                                 Lihat Surat
                                             </a>
                                         @else

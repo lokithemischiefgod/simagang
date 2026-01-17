@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Mail\PengajuanBaruMail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class InternshipRequestController extends Controller
 {
@@ -152,6 +153,30 @@ class InternshipRequestController extends Controller
     $item->delete();
 
     return back()->with('success', 'Pengajuan berhasil dihapus.');
+}
+
+public function viewSurat($id)
+{
+    $item = InternshipRequest::findOrFail($id);
+
+    // jika tidak ada surat
+    if (!$item->surat_pengantar) {
+        abort(404, 'Surat pengantar tidak tersedia.');
+    }
+
+    // path file di storage
+    $path = 'public/' . $item->surat_pengantar;
+
+    // jika file tidak ada di server
+    if (!Storage::exists($path)) {
+        abort(404, 'File surat pengantar tidak ditemukan.');
+    }
+
+    // tampilkan PDF
+    return response()->file(
+        storage_path('app/' . $path),
+        ['Content-Type' => 'application/pdf']
+    );
 }
 
 
